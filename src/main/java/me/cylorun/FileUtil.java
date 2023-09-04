@@ -24,6 +24,7 @@ public class FileUtil {
     private static ArrayList<String> mapPaths = new ArrayList<>();
     public static ArrayList<String> instancePaths = new ArrayList<>();
     public static boolean b = false;
+    private static File subFolder;
 
     public static void downloadMaps() {
 
@@ -38,7 +39,6 @@ public class FileUtil {
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         String fileName = "";
                         String disposition = httpConn.getHeaderField("Content-Disposition");
-
                         if (disposition != null) {
                             int index = disposition.indexOf("filename=");
                             if (index > 0) {
@@ -50,7 +50,7 @@ public class FileUtil {
                                 fileName = fileURL.substring(slashIndex + 1);
                             } else {
                                 System.err.println("Invalid fileURL: " + fileURL);
-                                continue; // Skip this URL and proceed to the next one
+                                continue;
                             }
                         }
                         if (disposition != null) {
@@ -64,7 +64,7 @@ public class FileUtil {
                                 fileName = fileURL.substring(slashIndex + 1);
                             } else {
                                 System.err.println("Invalid fileURL: " + fileURL);
-                                continue; // Skip this URL and proceed to the next one
+                                continue;
                             }
                         }
 
@@ -79,7 +79,6 @@ public class FileUtil {
                             while ((bytesRead = inputStream.read(buffer)) != -1) {
                                 outputStream.write(buffer, 0, bytesRead);
                             }
-
 
                             httpConn.disconnect();
                             b = true;
@@ -102,8 +101,6 @@ public class FileUtil {
 
         try {
             ZipFile zipFile = new ZipFile(file);
-
-
             File targetDir = new File(extractPath);
             if (!targetDir.exists()) {
                 targetDir.mkdirs();
@@ -137,12 +134,20 @@ public class FileUtil {
             e.printStackTrace();
         }
     }
-    public static void unFolderInAFolder(File parentFolder) throws IOException {
 
-        File subFolder = new File(parentFolder.listFiles()[0].getAbsolutePath());
+    public static void unFolderInAFolder(File parentFolder) throws IOException {
+        try {
+             subFolder = new File(parentFolder.listFiles()[0].getAbsolutePath());
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("quit");
+            return;
+        }
+
         File[] subfolderContents = subFolder.listFiles();
 
         if (subfolderContents != null) {
+
+
             for (File subfolderContent : subfolderContents) {
                 if (!subfolderContent.equals(subFolder)) {
                     Path destinationPath = parentFolder.toPath().resolve(subfolderContent.getName());
@@ -154,12 +159,15 @@ public class FileUtil {
                         Files.move(subfolderContent.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
                     }
 
-                    System.out.println("Moved: " + subfolderContent.getName());
+
+
                 }
             }
         }
         subFolder.delete();
     }
+
+
     public static void getMaps(){
         downloadMaps();
         if (b) {
@@ -174,6 +182,7 @@ public class FileUtil {
                 }
 
                 new File(file).delete();
+                b = false;
             }
         }
         JOptionPane.showMessageDialog(new JFrame(),"Finished downloading");

@@ -11,7 +11,6 @@ public class Main {
     private static final String version = "0.1";
 
     public static void main(String[] args) {
-        FileUtil.instancePaths.add("C:\\Users\\alfgr\\Desktop\\test");
         frame.setVisible(true);
         frame.setTitle("Map Check v"+version);
         frame.add(panel);
