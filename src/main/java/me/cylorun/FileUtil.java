@@ -39,33 +39,8 @@ public class FileUtil {
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         String fileName = "";
                         String disposition = httpConn.getHeaderField("Content-Disposition");
-                        if (disposition != null) {
-                            int index = disposition.indexOf("filename=");
-                            if (index > 0) {
-                                fileName = disposition.substring(index + 10);
-                            }
-                        } else {
-                            int slashIndex = fileURL.lastIndexOf('/');
-                            if (slashIndex >= 0 && slashIndex < fileURL.length() - 1) {
-                                fileName = fileURL.substring(slashIndex + 1);
-                            } else {
-                                System.err.println("Invalid fileURL: " + fileURL);
-                                continue;
-                            }
-                        }
-                        if (disposition != null) {
-                            int index = disposition.indexOf("filename=");
-                            if (index > 0) {
-                                fileName = disposition.substring(index + 10);
-                            }
-                        } else {
-                            int slashIndex = fileURL.lastIndexOf('/');
-                            if (slashIndex >= 0 && slashIndex < fileURL.length() - 1) {
-                                fileName = fileURL.substring(slashIndex + 1);
-                            } else {
-                                System.err.println("Invalid fileURL: " + fileURL);
-                                continue;
-                            }
+                        if (disposition != null && disposition.contains("filename=")) {
+                            fileName = disposition.substring(21);
                         }
 
                         String saveFilePath = instance + File.separator + fileName;
@@ -79,10 +54,8 @@ public class FileUtil {
                             while ((bytesRead = inputStream.read(buffer)) != -1) {
                                 outputStream.write(buffer, 0, bytesRead);
                             }
-
                             httpConn.disconnect();
                             b = true;
-
 
                         }
 
@@ -136,37 +109,32 @@ public class FileUtil {
     }
 
     public static void unFolderInAFolder(File parentFolder) throws IOException {
-        try {
-             subFolder = new File(parentFolder.listFiles()[0].getAbsolutePath());
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("quit");
-            return;
-        }
+        subFolder = new File(parentFolder.listFiles()[0].getAbsolutePath());
 
-        File[] subfolderContents = subFolder.listFiles();
+        if (subFolder.exists()) {
+            File[] subfolderContents = subFolder.listFiles();
+            if (subfolderContents != null) {
 
-        if (subfolderContents != null) {
+                for (File subfolderContent : subfolderContents) {
+                    if (!subfolderContent.equals(subFolder)) {
+                        Path destinationPath = parentFolder.toPath().resolve(subfolderContent.getName());
 
+                        if (subfolderContent.isDirectory()) {
+                            Files.move(subfolderContent.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                            unFolderInAFolder(destinationPath.toFile());
+                        } else {
+                            Files.move(subfolderContent.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                        if (subFolder.listFiles()==null) {
+                            subFolder.delete();
+                        }
 
-            for (File subfolderContent : subfolderContents) {
-                if (!subfolderContent.equals(subFolder)) {
-                    Path destinationPath = parentFolder.toPath().resolve(subfolderContent.getName());
-
-                    if (subfolderContent.isDirectory()) {
-                        Files.move(subfolderContent.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
-                        unFolderInAFolder(destinationPath.toFile());
-                    } else {
-                        Files.move(subfolderContent.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
                     }
-
-
-
                 }
+
             }
         }
-        subFolder.delete();
     }
-
 
     public static void getMaps(){
         downloadMaps();
