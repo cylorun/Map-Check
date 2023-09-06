@@ -12,6 +12,7 @@ public class InstanceSelect {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fileChooser.setCurrentDirectory(new File(defaultDir));
 
+
         int response = fileChooser.showOpenDialog(null);
 
         if (response == JFileChooser.APPROVE_OPTION) {
@@ -24,11 +25,6 @@ public class InstanceSelect {
                     JOptionPane.showMessageDialog(new JFrame(),savesFolder + "\n is not a minecraft directory");
                 }
             }
-
         }
-
-
-
-
     }
 }

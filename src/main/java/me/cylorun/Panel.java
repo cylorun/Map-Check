@@ -42,8 +42,18 @@ public class Panel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!FileUtil.instancePaths.isEmpty()) {
-                    FileUtil fu = new FileUtil();
-                    fu.getMaps();
+                    FileUtil fu = new FileUtil(); // Create a single instance of FileUtil
+                    for (int i = 0; i < FileUtil.instancePaths.size(); i++) {
+                        System.out.println(FileUtil.instancePaths.size());
+                        fu.downloadMaps(FileUtil.instancePaths.get(i));
+
+                        for (int a = 0; a < FileUtil.mapPaths.size(); a++) { // Use 'a' for the inner loop
+                            System.out.println(FileUtil.mapPaths.size());
+                            fu.getMaps(FileUtil.mapPaths.get(a));
+                        }
+                    }
+
+                    JOptionPane.showMessageDialog(new JFrame(), "Finished downloading");
                 } else {
                     JOptionPane.showMessageDialog(new JFrame(), "No instances selected");
                 }
