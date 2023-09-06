@@ -23,10 +23,10 @@ public class FileUtil {
     public static ArrayList<String> maps = new ArrayList<>();
     private static ArrayList<String> mapPaths = new ArrayList<>();
     public static ArrayList<String> instancePaths = new ArrayList<>();
-    public static boolean b = false;
-    private static File subFolder;
+    private  boolean b = false;
+    private File subFolder;
 
-    public static void downloadMaps() {
+    public void downloadMaps() {
 
         for (String fileURL : maps) {
             for (String instance : instancePaths) {
@@ -69,7 +69,7 @@ public class FileUtil {
         }
     }
 
-    public static void unZip(String file) {
+    public  void unZip(String file) {
         String extractPath = file.replace("zip", "");
 
         try {
@@ -108,7 +108,7 @@ public class FileUtil {
         }
     }
 
-    public static void unFolderInAFolder(File parentFolder) throws IOException {
+    public  void unFolderInAFolder(File parentFolder) throws IOException {
         subFolder = new File(parentFolder.listFiles()[0].getAbsolutePath());
 
         if (subFolder.exists()) {
@@ -136,7 +136,7 @@ public class FileUtil {
         }
     }
 
-    public static void getMaps(){
+    public  void getMaps(){
         downloadMaps();
         if (b) {
             for (String file : mapPaths) {

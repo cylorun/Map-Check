@@ -42,7 +42,8 @@ public class Panel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!FileUtil.instancePaths.isEmpty()) {
-                    FileUtil.getMaps();
+                    FileUtil fu = new FileUtil();
+                    fu.getMaps();
                 } else {
                     JOptionPane.showMessageDialog(new JFrame(), "No instances selected");
                 }
