@@ -4,8 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+
+import static me.cylorun.FileUtil.instancePaths;
+import static me.cylorun.FileUtil.mapPaths;
 
 public class Panel extends JPanel {
     private final JButton download = new JButton("Download");
@@ -41,17 +46,26 @@ public class Panel extends JPanel {
         download.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!FileUtil.instancePaths.isEmpty()) {
-                    FileUtil fu = new FileUtil(); // Create a single instance of FileUtil
-                    for (int i = 0; i < FileUtil.instancePaths.size(); i++) {
-                        System.out.println(FileUtil.instancePaths.size());
-                        fu.downloadMaps(FileUtil.instancePaths.get(i));
+                   if (!instancePaths.isEmpty()){
+                       FileUtil fu = new FileUtil();
+                       fu.downloadMaps(instancePaths.get(0));
+                       for (String path : mapPaths) {
+                           fu.getMaps(path);
+                       }
+                       for (String instance : instancePaths) {
+                           try {
+                               if (mapPaths.size() > 1) {
+                                   for (String map : mapPaths) {
+                                       fu.copyFolder(Path.of(map), Path.of(instance));
+                                   }
+                                }
+                               } catch(IOException ex){
+                                   throw new RuntimeException(ex);
 
-                        for (int a = 0; a < FileUtil.mapPaths.size(); a++) { // Use 'a' for the inner loop
-                            System.out.println(FileUtil.mapPaths.size());
-                            fu.getMaps(FileUtil.mapPaths.get(a));
-                        }
-                    }
+                               }
+
+
+                       }
 
                     JOptionPane.showMessageDialog(new JFrame(), "Finished downloading");
                 } else {
