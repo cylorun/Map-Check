@@ -19,12 +19,10 @@ public class InstanceSelect {
             File[] selectedFiles = fileChooser.getSelectedFiles();
             for (File file : selectedFiles){
                 String savesFolder = file + "\\.minecraft\\saves";
-                if (new File(savesFolder).exists()) {
-                    FileUtil.instancePaths.add(savesFolder);
-                } else {
-                    JOptionPane.showMessageDialog(new JFrame(),savesFolder + "\n is not a minecraft directory");
+                if (new File(savesFolder).exists())  FileUtil.instancePaths.add(savesFolder);
+                 else JOptionPane.showMessageDialog(new JFrame(),savesFolder + "\n is not a minecraft directory");
+
                 }
             }
         }
     }
-}

@@ -97,7 +97,6 @@ public class FileUtil {
 public  void unFolderInAFolder(File parentFolder) throws IOException{
 
         File[] files = parentFolder.listFiles();
-
         if (files != null && files.length > 0) {
             subFolder = new File(files[0].getAbsolutePath());
         }
@@ -115,12 +114,12 @@ public  void unFolderInAFolder(File parentFolder) throws IOException{
                         } else {
                             Files.move(subfolderContent.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
                         }
-                            f.delete();
+                        //deletes empty folder in the map folder
+                        f.delete();
 
 
                     }
                 }
-
             }
         }
     public void copyFolder(Path source, Path destination) throws IOException {
@@ -133,25 +132,24 @@ public  void unFolderInAFolder(File parentFolder) throws IOException{
                         e.printStackTrace();
                     }
                 });
-    }
+            }
 
 
 
     public void getMaps(String file){
         if (boo) {
-
                 unZip(file);
                 unzippedFolderPath = file.substring(0, file.lastIndexOf(".zip"));
 
                 try {
+
+                    //TODO everyting goes wrong here
                     unFolderInAFolder(new File(unzippedFolderPath));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                //getMaps() being called multiple times and this variable might be used in all instances maybe .?
                 boo = false;
             }
         }
-
-
     }

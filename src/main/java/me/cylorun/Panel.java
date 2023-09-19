@@ -52,7 +52,7 @@ public class Panel extends JPanel {
                        for (String path : mapPaths) {
                            fu.getMaps(path);
                        }
-                       for (String instance : instancePaths) {
+                       /**for (String instance : instancePaths) {
                            try {
                                if (mapPaths.size() > 1) {
                                    for (String map : mapPaths) {
@@ -65,9 +65,11 @@ public class Panel extends JPanel {
                                }
 
 
-                       }
-
-                    JOptionPane.showMessageDialog(new JFrame(), "Finished downloading");
+                   }*/
+                   JFrame frame = new JFrame();
+                   frame.setAlwaysOnTop(true);
+                   JOptionPane.showMessageDialog(frame, "Finished downloading");
+                   frame.dispose();
                 } else {
                     JOptionPane.showMessageDialog(new JFrame(), "No instances selected");
                 }
