@@ -18,8 +18,8 @@ public class Main {
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
-        FileUtil.instancePaths.add("C:\\Users\\alfgr\\Desktop\\mcsr\\MultiMC\\instances\\inst1\\.minecraft\\saves");
-        FileUtil.instancePaths.add("C:\\Users\\alfgr\\Desktop\\mcsr\\MultiMC\\instances\\inst2\\.minecraft\\saves");
+        FileUtil.instancePaths.add("C:\\Users\\alfgr\\Desktop\\mcsr\\MultiMC\\instances\\autoresetter1\\.minecraft\\saves");
+        FileUtil.instancePaths.add("C:\\Users\\alfgr\\Desktop\\mcsr\\MultiMC\\instances\\autoresetter2\\.minecraft\\saves");
 
 
 

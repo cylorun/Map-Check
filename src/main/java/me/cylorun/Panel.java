@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -48,15 +49,14 @@ public class Panel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                    if (!instancePaths.isEmpty()){
                        FileUtil fu = new FileUtil();
+                       //downloads all maps for inst1
                        fu.downloadMaps(instancePaths.get(0));
-                       for (String path : mapPaths) {
-                           fu.getMaps(path);
-                       }
-                       /**for (String instance : instancePaths) {
+                       instancePaths.remove(0);
+                       for (String instance : instancePaths) {
                            try {
-                               if (mapPaths.size() > 1) {
+                               if (!mapPaths.isEmpty()) {
                                    for (String map : mapPaths) {
-                                       fu.copyFolder(Path.of(map), Path.of(instance));
+                                       fu.copyFolder(new File(map), new File(instance));
                                    }
                                 }
                                } catch(IOException ex){
@@ -65,7 +65,7 @@ public class Panel extends JPanel {
                                }
 
 
-                   }*/
+                   }
                    JFrame frame = new JFrame();
                    frame.setAlwaysOnTop(true);
                    JOptionPane.showMessageDialog(frame, "Finished downloading");

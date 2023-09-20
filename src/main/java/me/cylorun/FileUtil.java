@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.*;
+import org.apache.commons.io.FileUtils;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
@@ -22,6 +23,7 @@ public class FileUtil {
     private boolean boo = false;
     private File subFolder;
     private String unzippedFolderPath;
+    public boolean ready = false;
 
     public void downloadMaps(String instance) {
         for (String fileURL : maps) {
@@ -47,8 +49,15 @@ public class FileUtil {
                         while ((bytesRead = inputStream.read(buffer)) != -1) {
                             outputStream.write(buffer, 0, bytesRead);
                         }
-                        boo = true;
                     }
+                    for (String path : mapPaths) {
+                        unZip(path);
+                        unzippedFolderPath = path.substring(0, path.lastIndexOf(".zip"));
+                        unFolderInAFolder(new File(unzippedFolderPath));
+                        new File(path).delete();
+                    }
+                    ready = true;
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -84,17 +93,19 @@ public class FileUtil {
                         while ((bytesRead = inputStream.read(buffer)) != -1) {
                             outputStream.write(buffer, 0, bytesRead);
                         }
+
+
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        new File(file).delete();
     }
 
 
-
-public  void unFolderInAFolder(File parentFolder) throws IOException{
+    public void unFolderInAFolder(File parentFolder) throws IOException {
 
         File[] files = parentFolder.listFiles();
         if (files != null && files.length > 0) {
@@ -102,54 +113,34 @@ public  void unFolderInAFolder(File parentFolder) throws IOException{
         }
         File f = new File(String.valueOf(subFolder));
         File[] subfolderContents = subFolder.listFiles();
-            if (subfolderContents != null) {
+        if (subfolderContents != null) {
 
-                for (File subfolderContent : subfolderContents) {
-                    if (!subfolderContent.equals(subFolder)) {
-                        Path destinationPath = parentFolder.toPath().resolve(subfolderContent.getName());
+            for (File subfolderContent : subfolderContents) {
+                if (!subfolderContent.equals(subFolder)) {
+                    Path destinationPath = parentFolder.toPath().resolve(subfolderContent.getName());
 
-                        if (subfolderContent.isDirectory()) {
-                            Files.move(subfolderContent.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
-                            unFolderInAFolder(destinationPath.toFile());
-                        } else {
-                            Files.move(subfolderContent.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
-                        }
-                        //deletes empty folder in the map folder
-                        f.delete();
-
-
+                    if (subfolderContent.isDirectory()) {
+                        Files.move(subfolderContent.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                        unFolderInAFolder(destinationPath.toFile());
+                    } else {
+                        Files.move(subfolderContent.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
                     }
+                    //deletes empty folder in the map folder
+                    f.delete();
+
+
                 }
-            }
-        }
-    public void copyFolder(Path source, Path destination) throws IOException {
-        Files.walk(source, FileVisitOption.FOLLOW_LINKS)
-                .forEach(sourcePath -> {
-                    try {
-                        Path destinationPath = destination.resolve(source.relativize(sourcePath));
-                        Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-
-
-
-    public void getMaps(String file){
-        if (boo) {
-                unZip(file);
-                unzippedFolderPath = file.substring(0, file.lastIndexOf(".zip"));
-
-                try {
-
-                    //TODO everyting goes wrong here
-                    unFolderInAFolder(new File(unzippedFolderPath));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                //getMaps() being called multiple times and this variable might be used in all instances maybe .?
-                boo = false;
             }
         }
     }
+
+    public static void copyFolder(File source, File destination) throws IOException {
+        try {
+                FileUtils.copyDirectory(source, destination);
+
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+
+    }
+}
