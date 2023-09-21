@@ -56,6 +56,7 @@ public class Panel extends JPanel {
                            try {
                                if (!mapPaths.isEmpty()) {
                                    for (String map : mapPaths) {
+                                       map = map.replace(".zip","");
                                        fu.copyFolder(new File(map), new File(instance));
                                    }
                                 }

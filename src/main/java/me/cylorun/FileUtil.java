@@ -20,9 +20,7 @@ public class FileUtil {
     public static ArrayList<String> maps = new ArrayList<>();
     public static ArrayList<String> mapPaths = new ArrayList<>();
     public static ArrayList<String> instancePaths = new ArrayList<>();
-    private boolean boo = false;
     private File subFolder;
-    private String unzippedFolderPath;
     public boolean ready = false;
 
     public void downloadMaps(String instance) {
@@ -52,7 +50,7 @@ public class FileUtil {
                     }
                     for (String path : mapPaths) {
                         unZip(path);
-                        unzippedFolderPath = path.substring(0, path.lastIndexOf(".zip"));
+                        String unzippedFolderPath = path.substring(0, path.lastIndexOf(".zip"));
                         unFolderInAFolder(new File(unzippedFolderPath));
                         new File(path).delete();
                     }
@@ -68,45 +66,45 @@ public class FileUtil {
 
     public void unZip(String file) {
         String extractPath = file.replace(".zip", "");
+        if (new File(file).exists()) {
+            try (ZipFile zipFile = new ZipFile(file)) {
+                File targetDir = new File(extractPath);
+                if (!targetDir.exists()) {
+                    targetDir.mkdirs();
+                }
 
-        try (ZipFile zipFile = new ZipFile(file)) {
-            File targetDir = new File(extractPath);
-            if (!targetDir.exists()) {
-                targetDir.mkdirs();
-            }
+                Enumeration<? extends ZipEntry> entries = zipFile.entries();
+                while (entries.hasMoreElements()) {
+                    ZipEntry entry = entries.nextElement();
+                    String entryName = entry.getName();
 
-            Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                String entryName = entry.getName();
+                    File outputFile = new File(targetDir, entryName);
 
-                File outputFile = new File(targetDir, entryName);
+                    if (entry.isDirectory()) {
+                        outputFile.mkdirs();
+                    } else {
+                        try (InputStream inputStream = zipFile.getInputStream(entry);
+                             FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+                            byte[] buffer = new byte[1024];
+                            int bytesRead;
 
-                if (entry.isDirectory()) {
-                    outputFile.mkdirs();
-                } else {
-                    try (InputStream inputStream = zipFile.getInputStream(entry);
-                         FileOutputStream outputStream = new FileOutputStream(outputFile)) {
-                        byte[] buffer = new byte[1024];
-                        int bytesRead;
+                            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                                outputStream.write(buffer, 0, bytesRead);
+                            }
 
-                        while ((bytesRead = inputStream.read(buffer)) != -1) {
-                            outputStream.write(buffer, 0, bytesRead);
+
                         }
-
-
                     }
                 }
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            new File(file).delete();
         }
-        new File(file).delete();
     }
 
-
     public void unFolderInAFolder(File parentFolder) throws IOException {
-
         File[] files = parentFolder.listFiles();
         if (files != null && files.length > 0) {
             subFolder = new File(files[0].getAbsolutePath());
@@ -125,7 +123,7 @@ public class FileUtil {
                     } else {
                         Files.move(subfolderContent.toPath(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
                     }
-                    //deletes empty folder in the map folder
+                    // deletes empty folder in the map folder
                     f.delete();
 
 
@@ -135,11 +133,16 @@ public class FileUtil {
     }
 
     public static void copyFolder(File source, File destination) throws IOException {
+        // TODO source has a .zip at the end and fucks it all
         try {
-                FileUtils.copyDirectory(source, destination);
+            if (source.exists()) {
+                System.out.println("hi");
+                FileUtils.copyDirectoryToDirectory(source, destination);
 
+            }
         } catch(IOException e){
-            e.printStackTrace();
+                e.printStackTrace();
+
         }
 
     }
