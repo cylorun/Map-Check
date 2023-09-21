@@ -35,6 +35,9 @@ public class FileUtil {
                     String disposition = httpConn.getHeaderField("Content-Disposition");
                     if (disposition != null && disposition.contains("filename=")) {
                         fileName = disposition.substring(21);
+
+                    } else {
+                        fileName = "_zero_cycle_practice_astraf_nayoar.zip";
                     }
                     String saveFilePath = Paths.get(instance, fileName).toString();
                     mapPaths.add(saveFilePath);
@@ -89,12 +92,9 @@ public class FileUtil {
                             while ((bytesRead = inputStream.read(buffer)) != -1) {
                                 outputStream.write(buffer, 0, bytesRead);
                             }
-
-
                         }
                     }
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -123,8 +123,6 @@ public class FileUtil {
                     }
                     // deletes empty folder in the map folder
                     f.delete();
-
-
                 }
             }
         }
@@ -133,14 +131,10 @@ public class FileUtil {
     public static void copyFolder(File source, File destination) throws IOException {
         try {
             if (source.exists()) {
-                System.out.println("hi");
                 FileUtils.copyDirectoryToDirectory(source, destination);
-
             }
-        } catch(IOException e){
+        } catch(IOException e) {
                 e.printStackTrace();
-
         }
-
     }
 }

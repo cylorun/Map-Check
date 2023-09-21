@@ -19,7 +19,7 @@ public class Panel extends JPanel {
     private final Map<JCheckBox, String> checkBoxes = new HashMap<>();
 
     public Panel() {
-        //TODO add a field where the user can put a download link to any map
+        //TODO add a field where the user can put a download link to any map, progress bar aswell
         setPreferredSize(new Dimension(300, 450));
         setLayout(null);
 
@@ -54,21 +54,17 @@ public class Panel extends JPanel {
                        fu.downloadMaps(instancePaths.get(0));
                        instancePaths.remove(0);
                        for (String instance : instancePaths) {
-
                            try {
                                if (!mapPaths.isEmpty()) {
                                    for (String map : mapPaths) {
                                        map = map.replace(".zip","");
                                        fu.copyFolder(new File(map), new File(instance));
-                                   }
-                                }
+                                        }
+                               }
                                } catch(IOException ex){
                                    throw new RuntimeException(ex);
-
                                }
-
-
-                   }
+                       }
                    JFrame frame = new JFrame();
                    frame.setAlwaysOnTop(true);
                    JOptionPane.showMessageDialog(frame, "Finished downloading");

@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version "7.1.2"
+
 }
 
 group = 'me.cylorun'
@@ -17,4 +19,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+jar {
+    manifest {
+        attributes 'Main-Class': 'me.cylorun.Main'
+    }
 }
