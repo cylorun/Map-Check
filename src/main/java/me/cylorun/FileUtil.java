@@ -21,7 +21,6 @@ public class FileUtil {
     public static ArrayList<String> mapPaths = new ArrayList<>();
     public static ArrayList<String> instancePaths = new ArrayList<>();
     private File subFolder;
-    public boolean ready = false;
 
     public void downloadMaps(String instance) {
         for (String fileURL : maps) {
@@ -54,7 +53,6 @@ public class FileUtil {
                         unFolderInAFolder(new File(unzippedFolderPath));
                         new File(path).delete();
                     }
-                    ready = true;
 
                 }
             } catch (IOException e) {
@@ -133,7 +131,6 @@ public class FileUtil {
     }
 
     public static void copyFolder(File source, File destination) throws IOException {
-        // TODO source has a .zip at the end and fucks it all
         try {
             if (source.exists()) {
                 System.out.println("hi");
