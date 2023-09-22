@@ -15,9 +15,7 @@ import static me.cylorun.FileUtil.mapPaths;
 public class Panel extends JPanel {
     private final JButton download = new JButton("Download");
     private final JButton selectInstances = new JButton("Select instances");
-    public JProgressBar bar = new JProgressBar();
     private final Map<JCheckBox, String> checkBoxes = new HashMap<>();
-
     public Panel() {
 
         setPreferredSize(new Dimension(300, 450));
@@ -42,7 +40,7 @@ public class Panel extends JPanel {
 
         download.setBounds(150, 20, 150, 40);
         selectInstances.setBounds(0, 20, 150, 40);
-        bar.setBounds(0,400,300,30);
+
         add(download);
         add(selectInstances);
 
@@ -53,6 +51,7 @@ public class Panel extends JPanel {
                        FileUtil fu = new FileUtil();
                        fu.downloadMaps(instancePaths.get(0));
                        instancePaths.remove(0);
+
                        for (String instance : instancePaths) {
                            try {
                                if (!mapPaths.isEmpty()) {

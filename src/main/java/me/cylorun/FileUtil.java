@@ -31,14 +31,7 @@ public class FileUtil {
                 HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
                 int responseCode = httpConn.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                    String fileName = "";
-                    String disposition = httpConn.getHeaderField("Content-Disposition");
-                    if (disposition != null && disposition.contains("filename=")) {
-                        fileName = disposition.substring(21);
-
-                    } else {
-                        fileName = "_zero_cycle_practice_astraf_nayoar.zip";
-                    }
+                    String fileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
                     String saveFilePath = Paths.get(instance, fileName).toString();
                     mapPaths.add(saveFilePath);
 
@@ -70,6 +63,7 @@ public class FileUtil {
         if (new File(file).exists()) {
             try (ZipFile zipFile = new ZipFile(file)) {
                 File targetDir = new File(extractPath);
+
                 if (!targetDir.exists()) {
                     targetDir.mkdirs();
                 }
