@@ -15,3 +15,4 @@ Select the maps you want and press download.
 - 7Rowl OW practice
 - Enter boat
 - Endportal fill
+- Also supports custom maps aslong as you provide a download link for them(.zip)
