@@ -16,6 +16,9 @@ public class Panel extends JPanel {
     private final JButton download = new JButton("Download");
     private final JButton selectInstances = new JButton("Select instances");
     private final Map<JCheckBox, String> checkBoxes = new HashMap<>();
+    private JTextField field = new JTextField();
+    private JLabel fieldLabel = new JLabel("Custom map url");
+    private JButton fieldButton = new JButton("Add");
     public Panel() {
 
         setPreferredSize(new Dimension(300, 450));
@@ -30,7 +33,7 @@ public class Panel extends JPanel {
         checkBoxes.put(new JCheckBox("Crafting v2"), "https://github.com/Semperzz/Crafting-Practice-v2/releases/download/v2.1/Crafting.Practice.v2.zip");
         checkBoxes.put(new JCheckBox("7rowl OW practice"), "https://github.com/7rowl/OWPractice/releases/download/v2.0/OW.Practice.v2.0.zip");
         checkBoxes.put(new JCheckBox("Zero prep"), "https://github.com/Semperzz/Zero-Sorting-Practice/releases/download/v1.5/Zero.Sorting.zip");
-
+        checkBoxes.put(new JCheckBox("Enter boat"),"https://github.com/pastahub/boat-enter-practice/releases/latest");
         int yPosition = 70;
         for (JCheckBox checkBox : checkBoxes.keySet()) {
             checkBox.setBounds(50, yPosition, 200, 20);
@@ -40,9 +43,27 @@ public class Panel extends JPanel {
 
         download.setBounds(150, 20, 150, 40);
         selectInstances.setBounds(0, 20, 150, 40);
+        field.setBounds(10,380,270,40);
+        fieldLabel.setBounds(10,350,100,30);
+        fieldButton.setBounds(10,420,60,30);
 
         add(download);
         add(selectInstances);
+        add(field);
+        add(fieldLabel);
+        add(fieldButton);
+
+        fieldButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String text = field.getText();
+                if (text.endsWith(".zip")){
+                    FileUtil.maps.add(text);
+                } else {
+                    JOptionPane.showMessageDialog(null,"Invalid URL","Error",JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
         download.addActionListener(new ActionListener() {
             @Override
