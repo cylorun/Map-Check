@@ -33,7 +33,7 @@ public class Panel extends JPanel {
         checkBoxes.put(new JCheckBox("Crafting v2"), "https://github.com/Semperzz/Crafting-Practice-v2/releases/download/v2.1/Crafting.Practice.v2.zip");
         checkBoxes.put(new JCheckBox("7rowl OW practice"), "https://github.com/7rowl/OWPractice/releases/download/v2.0/OW.Practice.v2.0.zip");
         checkBoxes.put(new JCheckBox("Zero prep"), "https://github.com/Semperzz/Zero-Sorting-Practice/releases/download/v1.5/Zero.Sorting.zip");
-        checkBoxes.put(new JCheckBox("Enter boat"),"https://github.com/pastahub/boat-enter-practice/releases/latest");
+        checkBoxes.put(new JCheckBox("Enter boat"),"https://github.com/pastahub/boat-enter-practice/releases/download/1.1/boat_enter_practice_map_1.1.zip");
         int yPosition = 70;
         for (JCheckBox checkBox : checkBoxes.keySet()) {
             checkBox.setBounds(50, yPosition, 200, 20);
