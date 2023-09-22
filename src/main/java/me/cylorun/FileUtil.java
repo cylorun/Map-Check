@@ -132,7 +132,7 @@ public class FileUtil {
         try {
             if (source.exists()) {
                 FileUtils.copyDirectoryToDirectory(source, destination);
-            }
+                }
         } catch(IOException e) {
                 e.printStackTrace();
         }

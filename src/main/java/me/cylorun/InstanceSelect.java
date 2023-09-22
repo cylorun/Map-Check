@@ -17,9 +17,16 @@ public class InstanceSelect {
             File[] selectedFiles = fileChooser.getSelectedFiles();
             for (File file : selectedFiles) {
                 String savesFolder = file + "\\.minecraft\\saves";
-                if (new File(savesFolder).exists())  FileUtil.instancePaths.add(savesFolder);
-                 else JOptionPane.showMessageDialog(new JFrame(),savesFolder + "\n is not a minecraft directory");
+                if (new File(savesFolder).exists())  {
+                    FileUtil.instancePaths.add(savesFolder);
+                }
+                 else {
+                     int choice = JOptionPane.showConfirmDialog(null, file.getAbsolutePath() + "\n is not a minecraft directory \n Would you still like to add it?", "Invalid Directory", JOptionPane.YES_NO_OPTION);
+                     if (choice == JOptionPane.YES_OPTION){
+                         FileUtil.instancePaths.add(file.getAbsolutePath());
 
+                     }
+                 }
                 }
             }
         }
