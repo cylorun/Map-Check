@@ -1,11 +1,16 @@
 package me.cylorun;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.formdev.flatlaf.FlatDarculaLaf;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.print.Book;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,145 +18,177 @@ import static me.cylorun.FileUtil.instancePaths;
 import static me.cylorun.FileUtil.mapPaths;
 
 public class Panel extends JPanel {
-    private final JButton download = new JButton("Download");
-    private final JButton selectInstances = new JButton("Select instances");
     private final Map<JCheckBox, String> checkBoxes = new HashMap<>();
-    private JTextField field = new JTextField();
-    private JLabel fieldLabel = new JLabel("Custom map url");
-    private JButton fieldButton = new JButton("Add");
-    public Panel() {
 
-        setPreferredSize(new Dimension(300, 450));
-        setLayout(null);
 
-        checkBoxes.put(new JCheckBox("Llamas bastion practice"), "https://github.com/LlamaPag/bastion/releases/download/3.14.0/LBP_3.14.0.zip");
-        checkBoxes.put(new JCheckBox("Zero Cycle"), "https://zerocycle.repl.co/_zero_cycle_practice_astraf_nayoar.zip");
-        checkBoxes.put(new JCheckBox("Ryguy2k4 End practice"), "https://github.com/ryguy2k4/ryguy2k4endpractice/releases/download/v3.4.0/_Ryguy2k4_End_Practice_v3.4.0-1.16.1.zip");
-        checkBoxes.put(new JCheckBox("Blaze practice"), "https://github.com/Semperzz/Blaze-Practice/releases/download/v1.3/Blaze.Practice.zip");
-        checkBoxes.put(new JCheckBox("End portal fill"), "https://github.com/cylorun/End-Portal-Fill/releases/download/Minecraft/EndPortal.v2.zip");
-        checkBoxes.put(new JCheckBox("Semperzz portal practice"), "https://github.com/Semperzz/Portal-Practice/releases/download/v2.8/Portal.Practice.v2.zip");
-        checkBoxes.put(new JCheckBox("Crafting v2"), "https://github.com/Semperzz/Crafting-Practice-v2/releases/download/v2.1/Crafting.Practice.v2.zip");
-        checkBoxes.put(new JCheckBox("7rowl OW practice"), "https://github.com/7rowl/OWPractice/releases/download/v2.0/OW.Practice.v2.0.zip");
-        checkBoxes.put(new JCheckBox("Zero prep"), "https://github.com/Semperzz/Zero-Sorting-Practice/releases/download/v1.5/Zero.Sorting.zip");
-        checkBoxes.put(new JCheckBox("Enter boat"),"https://github.com/pastahub/boat-enter-practice/releases/download/1.1/boat_enter_practice_map_1.1.zip");
-        int yPosition = 70;
-        for (JCheckBox checkBox : checkBoxes.keySet()) {
-            checkBox.setBounds(50, yPosition, 200, 20);
-            add(checkBox);
-            yPosition += 30;
+
+    public Panel()  {
+
+        JsonNode rootNode = null;
+        try {
+        UIManager.setLookAndFeel(new FlatDarculaLaf());
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        rootNode = objectMapper.readTree(new File("C:\\Users\\alfgr\\Desktop\\maps.json"));
+        } catch (UnsupportedLookAndFeelException | IOException e) {
+            throw new RuntimeException(e);
         }
 
-        download.setBounds(150, 20, 150, 40);
-        selectInstances.setBounds(0, 20, 150, 40);
-        field.setBounds(10,380,270,40);
-        fieldLabel.setBounds(10,350,100,30);
-        fieldButton.setBounds(10,420,60,30);
-
-        add(download);
-        add(selectInstances);
-        add(field);
-        add(fieldLabel);
-        add(fieldButton);
-
-        fieldButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String text = field.getText();
-                if (text.endsWith(".zip")){
-                    FileUtil.maps.add(text);
-                } else {
-                    JOptionPane.showMessageDialog(null,"Invalid URL","Error",JOptionPane.ERROR_MESSAGE);
-                }
+            for (JsonNode node : rootNode) {
+                String label = node.get("label").asText();
+                String url = node.get("url").asText();
+                checkBoxes.put(new JCheckBox(label), url);
             }
-        });
 
-        download.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                   if (!instancePaths.isEmpty()) {
-                       FileUtil fu = new FileUtil();
-                       fu.downloadMaps(instancePaths.get(0));
-                       instancePaths.remove(0);
 
-                       for (String instance : instancePaths) {
-                           try {
-                               if (!mapPaths.isEmpty()) {
-                                   for (String map : mapPaths) {
-                                       map = map.replace(".zip","");
-                                       fu.copyFolder(new File(map), new File(instance));
+            int height = 170 + (checkBoxes.size() * 30);
+
+            setPreferredSize(new Dimension(300, height));
+            setLayout(null);
+            setBackground(new Color(49, 53, 66));
+
+            int yPosition = 70;
+            for (JCheckBox checkBox : checkBoxes.keySet()) {
+                checkBox.setBounds(50, yPosition, 200, 20);
+                add(checkBox);
+                yPosition += 30;
+            }
+                JButton fieldButton = new JButton("Add");
+                JLabel fieldLabel = new JLabel("Custom map URL");
+                JButton selectInstances = new JButton("Select instances");
+                JButton download = new JButton("Download");
+                JTextField field = new JTextField();
+
+
+                download.setBounds(150, 20, 150, 40);
+                selectInstances.setBounds(0, 20, 150, 40);
+                field.setBounds(10, height-70, 270, 40);
+                fieldLabel.setBounds(10, height-100, 100, 30);
+                fieldButton.setBounds(10, height-30, 60, 30);
+
+
+                add(download);
+                add(selectInstances);
+                add(field);
+                add(fieldLabel);
+                add(fieldButton);
+
+
+                fieldButton.addActionListener(e -> {
+                    String text = field.getText();
+
+                    //TODO fix path, reload window to show new map (or add reload button)
+                    if (text.endsWith(".zip")) {
+
+                        // Create a map for each object
+                        Map<String, String> item = Map.of(
+                                "label", "Zero Sorting",
+                                "url", "https://github.com/Semperzz/Zero-Sorting-Practice/releases/download/v1.5/Zero.Sorting.zip"
+                        );
+
+                        // Add the map to the list
+
+                        // Create an ObjectMapper to write JSON
+                        ObjectMapper objectMapper = new ObjectMapper();
+
+                        // Enable pretty printing (optional)
+                        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+                        // Specify the file path where you want to save the JSON
+                        File jsonFile = new File("output.json");
+
+                            // Write the JSON data to the file
+                        try {
+                            objectMapper.writeValue(jsonFile, item);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        System.out.println("JSON data written to " + jsonFile.getAbsolutePath());
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid URL", "Error", JOptionPane.ERROR_MESSAGE);
+
+                    }
+                });
+
+                download.addActionListener(e -> {
+                    if (!instancePaths.isEmpty()) {
+                        FileUtil fu = new FileUtil();
+                        fu.downloadMaps(instancePaths.get(0));
+                        instancePaths.remove(0);
+
+                        for (String instance : instancePaths) {
+                            try {
+                                if (!mapPaths.isEmpty()) {
+                                    for (String map : mapPaths) {
+                                        map = map.replace(".zip", "");
+                                        fu.copyFolder(new File(map), new File(instance));
+                                    }
+                                }
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }
+
+                        JOptionPane.showMessageDialog(null, "Finished downloading");
+                    } else {
+                        JOptionPane.showMessageDialog(new JFrame(), "No instances selected");
+                    }
+                });
+
+                selectInstances.addActionListener(e -> {
+                    JFileChooser fileChooser = new JFileChooser();
+
+                    fileChooser.setCurrentDirectory(new File(System.getProperty("user.home"), "\\Desktop"));
+                    fileChooser.setMultiSelectionEnabled(true);
+                    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                    int response = fileChooser.showOpenDialog(null);
+
+                    if (response == JFileChooser.APPROVE_OPTION) {
+                        File[] selectedFiles = fileChooser.getSelectedFiles();
+
+                        for (File file : selectedFiles) {
+                            File savesFolder = new File(file + "\\.minecraft\\saves");
+
+                            if (savesFolder.exists()) {
+                                instancePaths.add(savesFolder.getAbsolutePath());
+                            } else {
+                                int choice = JOptionPane.showConfirmDialog(
+                                        null,
+                                        file.getAbsolutePath() + "\n is not a Minecraft directory \n Would you still like to add it?",
+                                        "Invalid Directory",
+                                        JOptionPane.YES_NO_OPTION
+                                );
+
+                                if (choice == JOptionPane.YES_OPTION) {
+                                    boolean matchFound = false;
+
+                                    for (File f : file.listFiles()) {
+                                        if (f.getName().contains(".minecraft")) {
+                                            savesFolder.mkdir();
+                                            instancePaths.add(savesFolder.getAbsolutePath());
+                                            matchFound = true;
+                                            break;
                                         }
                                     }
-                               } catch(IOException ex){
-                                   throw new RuntimeException(ex);
-                               }
-                       }
-                   JFrame frame = new JFrame();
-                   frame.setAlwaysOnTop(true);
-                   JOptionPane.showMessageDialog(frame, "Finished downloading");
-                   frame.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(new JFrame(), "No instances selected");
-                }
-            }
-        });
-
-        selectInstances.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                String defaultDir = System.getProperty("user.home") + "\\Desktop";
-
-                fileChooser.setCurrentDirectory(new File(defaultDir));
-                fileChooser.setMultiSelectionEnabled(true);
-                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                int response = fileChooser.showOpenDialog(null);
-
-                if (response == JFileChooser.APPROVE_OPTION) {
-                    File[] selectedFiles = fileChooser.getSelectedFiles();
-
-                    for (File file : selectedFiles) {
-                        File savesFolder = new File(file + "\\.minecraft\\saves");
-
-                        if (savesFolder.exists()) {
-                            FileUtil.instancePaths.add(savesFolder.getAbsolutePath());
-                        } else {
-
-                            int choice = JOptionPane.showConfirmDialog(null, file.getAbsolutePath() + "\n is not a minecraft directory \n Would you still like to add it?", "Invalid Directory", JOptionPane.YES_NO_OPTION);
-
-                            if (choice == JOptionPane.YES_OPTION) {
-                                boolean matchFound = false;
-
-                                for (File f : file.listFiles()) {
-                                    if (f.getName().contains(".minecraft")) {
-                                        savesFolder.mkdir();
-                                        FileUtil.instancePaths.add(savesFolder.getAbsolutePath());
-                                        matchFound = true;
-                                        break;
+                                    if (!matchFound) {
+                                        instancePaths.add(file.getAbsolutePath());
                                     }
                                 }
-                                if (!matchFound) {
-                                    FileUtil.instancePaths.add(file.getAbsolutePath());
-                                }
-
                             }
                         }
                     }
-                }
+                });
 
+                for (JCheckBox c : checkBoxes.keySet()) {
+                    c.addActionListener(e -> {
+                        if (c.isSelected()) {
+                            FileUtil.maps.add(checkBoxes.get(c));
+                        } else {
+                            FileUtil.maps.remove(checkBoxes.get(c));
+                        }
+                    });
+                }
             }
-        });
-
-        for (JCheckBox checkBox : checkBoxes.keySet()) {
-            checkBox.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (checkBox.isSelected()) {
-                        FileUtil.maps.add(checkBoxes.get(checkBox));
-                    } else {
-                        FileUtil.maps.remove(checkBoxes.get(checkBox));
-                    }
-                }
-            });
-        }
     }
-}
+
