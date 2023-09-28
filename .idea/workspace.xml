@@ -64,7 +64,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.Main">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="me.cylorun.Main" />
       <extension name="coverage">
