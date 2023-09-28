@@ -7,6 +7,9 @@ Select the maps you want and press download.
 
 If u have any issues or  suggestions you can dm me on discord. @cylorun
 # Maps
+- Also supports custom maps aslong as you provide a download link for them(.zip)
+- You can also modify the maps.json file to change the default maps
+  
 - Llamas bastion practice
 - Crafting v2
 - Zero Cycle prep
@@ -17,5 +20,4 @@ If u have any issues or  suggestions you can dm me on discord. @cylorun
 - 7Rowl OW practice
 - Enter boat
 - Endportal fill
-- Also supports custom maps aslong as you provide a download link for them(.zip)
-- You can also modify the maps.json file to change the default maps
+
