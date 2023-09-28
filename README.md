@@ -18,3 +18,4 @@ If u have any issues or  suggestions you can dm me on discord. @cylorun
 - Enter boat
 - Endportal fill
 - Also supports custom maps aslong as you provide a download link for them(.zip)
+- You can also modify the maps.json file to change the default maps
