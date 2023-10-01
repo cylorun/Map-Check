@@ -23,7 +23,6 @@ public class Panel extends JPanel {
     JTextField field;
 
     public Panel() {
-
         initializeGuiComponents();
         initializeActionListeners();
     }
@@ -127,17 +126,15 @@ public class Panel extends JPanel {
         download.addActionListener(e -> {
             if (!instancePaths.isEmpty()) {
                 FileUtil.downloadMaps(instancePaths.get(0));
-
-                if (!mapPaths.isEmpty() || mapPaths.size() != 1) {
-                    for (int i = 1; i < instancePaths.size(); i++) {
-                        String instance = instancePaths.get(i);
-                            for (String map : mapPaths) {
-                                map = map.replace(".zip", "");
-                                System.out.println(map);
-                                FileUtil.copyFolder(new File(map), new File(instance));
-                            }
+                for (int i = 1; i < instancePaths.size(); i++) {
+                    String instance = instancePaths.get(i);
+                        for (String map : mapPaths) {
+                            map = map.replace(".zip", "");
+                            System.out.println(map);
+                            FileUtil.copyFolder(new File(map), new File(instance));
                         }
-                }
+                    }
+
                 mapPaths.clear();
                 JOptionPane.showMessageDialog(null, "Finished downloading");
             } else {

@@ -10,7 +10,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 
 public class Main {
     public static JFrame frame = new JFrame();
@@ -22,7 +21,7 @@ public class Main {
                 URL url = new URL("https://cdn.discordapp.com/attachments/1087349364348956682/1157074195017125988/maps.json");
                 try (InputStream in = url.openStream()) {
                     Path outputPath = Path.of("maps.json");
-                    Files.copy(in, outputPath, StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(in, outputPath);
                 } catch (IOException e) {
                 }
             } catch (MalformedURLException e) {
