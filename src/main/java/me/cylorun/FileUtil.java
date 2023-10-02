@@ -46,7 +46,6 @@ public class FileUtil {
                         unZip(path);
 
                     }
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -61,24 +60,28 @@ public class FileUtil {
             try (ZipFile zipFile = new ZipFile(file)) {
                 File targetDir = new File(extractPath);
 
-                if (!targetDir.exists()) {
+                if (!targetDir.exists()) {  // useless i think
                     targetDir.mkdirs();
                 }
 
                 Enumeration<? extends ZipEntry> entries = zipFile.entries();
-                int i = 0;
+                boolean match = false;
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
                     String entryName = entry.getName();
-
                     File outputFile = new File(targetDir.getParentFile(), entryName);
-                    if(i==0){
-                        mapPaths.add(outputFile.getAbsolutePath());
+
+                    //System.out.println(outputFile);
+                    if (outputFile.isDirectory() && !match) { // add a check to make sure it's the closest folder to the map origin
+                        match = true;
+                        File f = new File(String.valueOf(outputFile.getParentFile()));
+                        mapPaths.add(f.getAbsolutePath());
                         mapPaths.remove(file);
-                        System.out.println(outputFile);
+                        System.out.println(f);
+
 
                     }
-                    i++;
+
                     if (entry.isDirectory()) {
                         outputFile.mkdirs();
                     } else {

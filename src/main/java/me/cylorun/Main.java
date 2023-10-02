@@ -12,7 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Main {
-    public static JFrame frame = new JFrame();
+    private static final UIManager uiM = new UIManager();
+    public static JFrame frame;
     public static void main(String[] args) {
         //TODO can only download once per session
         //TODO boat enter prac doesnt work(all assets put into a zip, not the traditional all assets in a folder>zip)
@@ -28,10 +29,12 @@ public class Main {
             }
         }
         try {
-            UIManager.setLookAndFeel(new FlatDarculaLaf());
+            uiM.setLookAndFeel(new FlatDarculaLaf());
+
         } catch (UnsupportedLookAndFeelException e) {
             throw new RuntimeException(e);
         }
+            frame = new JFrame();
             frame.add(new Panel());
 
             frame.setVisible(true);
@@ -41,5 +44,10 @@ public class Main {
             frame.setResizable(false);
             frame.setLocationRelativeTo(null);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        }
+
+
+            FileUtil.instancePaths.add("C:\\Users\\alfgr\\Desktop\\mcsr\\MultiMC\\instances\\inst1\\.minecraft\\saves");
+            FileUtil.instancePaths.add("C:\\Users\\alfgr\\Desktop\\mcsr\\MultiMC\\instances\\inst2\\.minecraft\\saves");
+
+    }
     }

@@ -130,7 +130,6 @@ public class Panel extends JPanel {
                     String instance = instancePaths.get(i);
                         for (String map : mapPaths) {
                             map = map.replace(".zip", "");
-                            System.out.println(map);
                             FileUtil.copyFolder(new File(map), new File(instance));
                         }
                     }
@@ -154,30 +153,30 @@ public class Panel extends JPanel {
                 File[] selectedFiles = fileChooser.getSelectedFiles();
 
                 for (File file : selectedFiles) {
-                    File savesFolder = new File(file,"\\.minecraft\\saves");
+                    File savesFolder = new File(file, "\\.minecraft\\saves");
 
                     if (savesFolder.exists()) {
                         instancePaths.add(savesFolder.getAbsolutePath());
                     } else {
-                        int choice = JOptionPane.showConfirmDialog(
-                                null,
-                                file.getAbsolutePath() + "\n is not a Minecraft directory \n Would you still like to add it?",
-                                "Invalid Directory",
-                                JOptionPane.YES_NO_OPTION
-                        );
+                        boolean matchFound = false;
 
-                        if (choice == JOptionPane.YES_OPTION) {
-                            boolean matchFound = false;
-
-                            for (File f : file.listFiles()) {
-                                if (f.getName().contains(".minecraft")) {
-                                    savesFolder.mkdir();
-                                    instancePaths.add(savesFolder.getAbsolutePath());
-                                    matchFound = true;
-                                    break;
-                                }
+                        for (File f : file.listFiles()) {
+                            if (f.getName().contains(".minecraft")) {
+                                savesFolder.mkdir();
+                                instancePaths.add(savesFolder.getAbsolutePath());
+                                matchFound = true;
+                                break;
                             }
-                            if (!matchFound) {
+                        }
+                        if (!matchFound) {
+                            int choice = JOptionPane.showConfirmDialog(
+                                    null,
+                                    file.getAbsolutePath() + "\n is not a Minecraft directory \n Would you still like to add it?",
+                                    "Invalid Directory",
+                                    JOptionPane.YES_NO_OPTION
+                            );
+
+                            if (choice == JOptionPane.YES_OPTION) {
                                 instancePaths.add(file.getAbsolutePath());
                             }
                         }
@@ -185,7 +184,6 @@ public class Panel extends JPanel {
                 }
             }
         });
-
     }
 }
 
