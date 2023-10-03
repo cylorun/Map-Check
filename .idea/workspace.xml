@@ -5,12 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63c0ded9-9da0-40f4-b6cb-504c6c512873" name="Changes" comment="clea">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_02_10_2023_10_37__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_02_10_2023_10_37__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_28_09_2023_22_56__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_28_09_2023_22_56__Changes_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/maps.json" beforeDir="false" afterPath="$PROJECT_DIR$/maps.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/FileUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/Panel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/Panel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

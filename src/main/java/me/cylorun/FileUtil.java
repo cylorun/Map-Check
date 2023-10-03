@@ -9,6 +9,7 @@ import java.nio.file.*;
 import org.apache.commons.io.FileUtils;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -24,7 +25,13 @@ public class FileUtil {
         for (String fileURL : maps) {
             try {
                 URL url = new URL(fileURL);
-                String fileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
+                String fileName = null;
+                if (fileURL.endsWith(".zip") || fileURL.endsWith(".rar")) {
+                    fileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
+                } else {
+                    fileName = "ermatron";
+
+                }
                 String saveFilePath = Paths.get(instance, fileName).toString();
                 Files.copy(url.openStream(), Path.of(saveFilePath));
 
