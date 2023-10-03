@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static me.cylorun.FileUtil.instancePaths;
-import static me.cylorun.FileUtil.mapPaths;
+import static me.cylorun.FileUtil.*;
 
 public class Panel extends JPanel {
     JButton fieldButton;
@@ -125,26 +124,28 @@ public class Panel extends JPanel {
 
         download.addActionListener(e -> {
             if (!instancePaths.isEmpty()) {
-                FileUtil.downloadMaps(instancePaths.get(0));
-                for (int i = 1; i < instancePaths.size(); i++) {
-                    String instance = instancePaths.get(i);
+                if (!maps.isEmpty()) {
+                    FileUtil.downloadMaps(instancePaths.get(0));
+                    for (int i = 1; i < instancePaths.size(); i++) {
+                        String instance = instancePaths.get(i);
                         for (String map : mapPaths) {
                             map = map.replace(".zip", "");
                             FileUtil.copyFolder(new File(map), new File(instance));
                         }
+                        mapPaths.clear();
+                        JOptionPane.showMessageDialog(null, "Finished downloading","hanbani",JOptionPane.INFORMATION_MESSAGE);
                     }
 
-                mapPaths.clear();
-                JOptionPane.showMessageDialog(null, "Finished downloading");
-            } else {
-                JOptionPane.showMessageDialog(null, "No instances selected");
-            }
+                } else JOptionPane.showMessageDialog(null,"No maps selected","lol",JOptionPane.WARNING_MESSAGE);
+                
+            } else JOptionPane.showMessageDialog(null, "No instances selected","UNLUCKY!",JOptionPane.WARNING_MESSAGE);
+
         });
 
         selectInstances.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
 
-            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home"), "\\Desktop"));
+            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home"), "/Desktop"));
             fileChooser.setMultiSelectionEnabled(true);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int response = fileChooser.showOpenDialog(null);
@@ -153,13 +154,12 @@ public class Panel extends JPanel {
                 File[] selectedFiles = fileChooser.getSelectedFiles();
 
                 for (File file : selectedFiles) {
-                    File savesFolder = new File(file, "\\.minecraft\\saves");
+                    File savesFolder = new File(file, "/.minecraft/saves");
 
                     if (savesFolder.exists()) {
                         instancePaths.add(savesFolder.getAbsolutePath());
                     } else {
                         boolean matchFound = false;
-
                         for (File f : file.listFiles()) {
                             if (f.getName().contains(".minecraft")) {
                                 savesFolder.mkdir();

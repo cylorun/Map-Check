@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.*;
 import org.apache.commons.io.FileUtils;
@@ -24,30 +23,18 @@ public class FileUtil {
     public static void downloadMaps(String instance) {
         for (String fileURL : maps) {
             try {
-                Files.createDirectories(Paths.get(instance));
-
                 URL url = new URL(fileURL);
-                HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
-                int responseCode = httpConn.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    String fileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
-                    String saveFilePath = Paths.get(instance, fileName).toString();
-                    mapPaths.add(saveFilePath);
+                String fileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
+                String saveFilePath = Paths.get(instance, fileName).toString();
+                Files.copy(url.openStream(), Path.of(saveFilePath));
 
-                    try (InputStream inputStream = httpConn.getInputStream();
-                         FileOutputStream outputStream = new FileOutputStream(saveFilePath)) {
-                        int bytesRead;
-                        byte[] buffer = new byte[4096];
-                        while ((bytesRead = inputStream.read(buffer)) != -1) {
-                            outputStream.write(buffer, 0, bytesRead);
-                        }
-                    }
-                    for (String path : mapPaths) {
-                        unZip(path);
+                mapPaths.add(saveFilePath);
 
-                    }
+                for (String path : mapPaths) {
+                    unZip(path);
                 }
-            } catch (IOException e) {
+            }
+            catch (IOException e){
                 e.printStackTrace();
             }
         }
@@ -56,34 +43,28 @@ public class FileUtil {
 
     public static void unZip(String file) {
         String extractPath = file.replace(".zip", "");
-        if (new File(file).exists()) {
+        if (new File(file).exists() && !new File(file).isDirectory()) {
             try (ZipFile zipFile = new ZipFile(file)) {
                 File targetDir = new File(extractPath);
-
-                if (!targetDir.exists()) {  // useless i think
-                    targetDir.mkdirs();
-                }
 
                 Enumeration<? extends ZipEntry> entries = zipFile.entries();
                 boolean match = false;
                 while (entries.hasMoreElements()) {
+
                     ZipEntry entry = entries.nextElement();
                     String entryName = entry.getName();
                     File outputFile = new File(targetDir.getParentFile(), entryName);
 
-                    //System.out.println(outputFile);
-                    if (outputFile.isDirectory() && !match) { // add a check to make sure it's the closest folder to the map origin
-                        match = true;
-                        File f = new File(String.valueOf(outputFile.getParentFile()));
-                        mapPaths.add(f.getAbsolutePath());
+                    if (!match && !outputFile.getParentFile().getAbsolutePath().endsWith("saves")) {
+                        mapPaths.add(String.valueOf(outputFile.getParentFile()));
                         mapPaths.remove(file);
-                        System.out.println(f);
-
-
+                        System.out.println(outputFile.getParentFile().getAbsolutePath() + "  , match");
+                        match = true;
                     }
 
                     if (entry.isDirectory()) {
                         outputFile.mkdirs();
+
                     } else {
                         try (InputStream inputStream = zipFile.getInputStream(entry);
                              FileOutputStream outputStream = new FileOutputStream(outputFile)) {
@@ -99,22 +80,18 @@ public class FileUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new File(file).delete(); // zip folder
-            new File(extractPath).delete(); // funny folder, currently the copyFolder method used in download.aactionlist copies this empty folder and not the pther one
-
-
+            new File(file).delete();
         }
     }
 
 
-
-    public static void copyFolder(File source, File destination){
+    public static void copyFolder(File source, File destination) {
         try {
             if (source.exists()) {
                 FileUtils.copyDirectoryToDirectory(source, destination);
-                }
-        } catch(IOException e) {
-                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
