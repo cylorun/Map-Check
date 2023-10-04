@@ -89,48 +89,38 @@ public class Panel extends JPanel {
         }
         Main.frame.pack();
     }
-    private void writeToJson(String l, String u){
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        ArrayNode rootNode;
-        try {
-            rootNode = (ArrayNode) objectMapper.readTree(new File("maps.json"));
-            Map<String, String> map = Map.of(
-                    "label", l,
-                    "url", u
-            );
-            JsonNode mapNode = objectMapper.valueToTree(map);
-            rootNode.add(mapNode);
-
-            objectMapper.writeValue(new File("maps.json"), rootNode);
-            JOptionPane.showMessageDialog(null, String.format("Added the map %s with the link: \n %s", l.replace(".zip", ""), u));
-            initializeGuiComponents();
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-    }
     private void initializeActionListeners(){
         fieldButton.addActionListener(e -> {
             String url = field.getText();
-            String label = null;
-            if (url.endsWith(".zip") || url.endsWith(".rar")) {
-                label = url.substring(url.lastIndexOf('/') + 1).replace(".zip","").replace(".rar","");
-            } else {
-                label = "Map with weird url";
+            String label = url.substring(url.lastIndexOf('/') + 1);
 
-            }
-                if (url.endsWith(".zip") || url.endsWith(".rar")) {
-                  writeToJson(label,url);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+            ArrayNode rootNode;
+
+            try {
+                rootNode = (ArrayNode) objectMapper.readTree(new File("maps.json"));
+                if (url.endsWith(".zip")) {
+                    Map<String, String> map = Map.of(
+                            "label", label,
+                            "url", url
+                    );
+                    JsonNode mapNode = objectMapper.valueToTree(map);
+                    rootNode.add(mapNode);
+
+                    objectMapper.writeValue(new File("maps.json"), rootNode);
+                    JOptionPane.showMessageDialog(null, String.format("Added the map %s with the link: \n %s",label.replace(".zip",""),url));
+                    initializeGuiComponents();
+
                 } else {
-                    int choice  = JOptionPane.showConfirmDialog(null, String.format("Invalid URL \n %s \nwould you still like to add it? ",url), "Uhh", JOptionPane.YES_NO_OPTION);
-                    if (choice == JOptionPane.YES_OPTION){
-                        writeToJson(label,url);
-
-                    }
+                    JOptionPane.showMessageDialog(null, String.format("Invalid URL \n %s ",url), "Error", JOptionPane.ERROR_MESSAGE);
                 }
-    });
+
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         download.addActionListener(e -> {
             if (!instancePaths.isEmpty()) {
