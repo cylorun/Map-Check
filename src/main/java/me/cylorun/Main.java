@@ -16,7 +16,7 @@ public class Main {
         //TODO boat enter prac doesnt work(all assets put into a zip, not the traditional all assets in a folder>zip)
         if (!new File("maps.json").exists()) {
             try {
-                URL url = new URL("https://cdn.discordapp.com/attachments/1087349364348956682/1157074195017125988/maps.json");
+                URL url = new URL("https://cdn.discordapp.com/attachments/1087349364348956682/1159077547779313734/maps.json");
                 Files.copy(url.openStream(), Path.of("maps.json"));
             } catch (IOException e) {
                 e.printStackTrace();
