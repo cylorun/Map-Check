@@ -14,9 +14,10 @@ public class Main {
     public static JFrame frame;
     public static void main(String[] args) {
         //TODO boat enter prac doesnt work(all assets put into a zip, not the traditional all assets in a folder>zip)
+        //TODO remove maps
         if (!new File("maps.json").exists()) {
             try {
-                URL url = new URL("https://cdn.discordapp.com/attachments/1087349364348956682/1159077547779313734/maps.json");
+                URL url = new URL("https://gist.githubusercontent.com/cylorun/3cd5d459d9adc9ad28608e8ed606aadb/raw/7a84e9ea0e892af7dfb49e5aae268e35034a66d4/maps.json");
                 Files.copy(url.openStream(), Path.of("maps.json"));
             } catch (IOException e) {
                 e.printStackTrace();
