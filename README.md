@@ -13,13 +13,16 @@ Also it does not like google download links, they are just annoying and long as 
 
 
 # Default Maps
-- Llamas bastion practice
-- Crafting v2
-- Zero Cycle prep
-- Zero Cycle
-- Ryguy2k4 End Practice
-- Blaze fight practice
-- Portal Practice v2
-- 7Rowl OW practice
-- Endportal fill
+- [Llamas bastion practice](https://github.com/LlamaPag/bastion/releases//latest)
+- [Crafting v2](https://github.com/Semperzz/Crafting-Practice-v2/releases//latest)
+- [Zero Sorting](https://github.com/Semperzz/Zero-Sorting-Practice/releases/latest)
+- [Zero Cycle](https://zerocycle.repl.co/)
+- [Ryguy2k4 End Practice](https://github.com/ryguy2k4/ryguy2k4endpractice/releases/latest)
+- [Blaze fight practice](https://github.com/Semperzz/Blaze-Practice/releases/latest)
+- [Portal Practice v2](https://github.com/Semperzz/Portal-Practice/releases/latest)
+- [7Rowl OW practice](https://github.com/7rowl/OWPractice/releases/latest)
+- [Endportal fill](https://github.com/cylorun/End-Portal-Fill/releases/latest)
+- [BT Practice](https://github.com/Mescht/BTPractice/releases/latest)
+- [Vine Seed Practice](https://github.com/r0hkx/vine-ssg-practice/releases/latest)
+
 
