@@ -1,39 +1,32 @@
 package me.cylorun;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
+import me.cylorun.gui.MainPanel;
+import me.cylorun.io.BrainBorOptions;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class Main {
-    private static final UIManager uiManager = new UIManager();
-    public static JFrame frame;
+    // /execute in minecraft:the_nether run tp @s 1000 43.00 -25.50 113.63 69.31
+    //                                              x    y     z    yaw      pitch
+    public final static String VERSION = "2.4.3";
+
     public static void main(String[] args) throws UnsupportedLookAndFeelException {
-        if (!new File("maps.json").exists()) {
-            try {
-                URL url = new URL("https://gist.githubusercontent.com/cylorun/3cd5d459d9adc9ad28608e8ed606aadb/raw/7a84e9ea0e892af7dfb49e5aae268e35034a66d4/maps.json");
-                Files.copy(url.openStream(), Path.of("maps.json"));
-            } catch (IOException e) {
-                Util.errorPane(e);
-            }
-        }
-            uiManager.setLookAndFeel(new FlatDarculaLaf());
+        UIManager.setLookAndFeel(new FlatDarculaLaf());
+        JFrame frame = new JFrame("Brain-bor v" + VERSION);
+        BrainBorOptions bo = new BrainBorOptions();
+        frame.add(new MainPanel(bo));
 
-            frame = new JFrame();
-            frame.add(new MapCheckPanel());
+        frame.setAlwaysOnTop(bo.onTop);
+        frame.setVisible(true);
 
-            frame.setVisible(true);
-            frame.setTitle("Map-Check");
-            frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+        frame.pack();
 
-            frame.setResizable(false);
-            frame.setLocationRelativeTo(null);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            Util.log(0,"Started Map-Check");
+        ImageIcon icon = new ImageIcon(Main.class.getClassLoader().getResource("icon.png"));
+        frame.setIconImage(icon.getImage());
 
     }
+
 }
