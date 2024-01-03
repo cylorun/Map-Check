@@ -27,17 +27,16 @@ public class MapCheckFrame extends JFrame {
     private JButton instSelectButton;
     private JButton selectAllButton;
     private JButton deSelectAllButton;
-    public static JProgressBar progressBar;
+    private static JProgressBar progressBar;
     private static List<String> selectedMaps = new ArrayList<>();
     private static List<String> instancePaths = new ArrayList<>();
     private Map<JCheckBox, String> checkBoxes;
-    public static int currentStep = 0;
+    private static int currentStep = 0;
 
     public MapCheckFrame() throws IOException {
         mainPanel = new JPanel();
-        downloadMapInfo();
-        checkBoxes = getCheckBoxes();
 
+        downloadMapInfo();
         initializeMainPanel();
         initializeActionListeners();
         this.setVisible(true);
@@ -94,7 +93,7 @@ public class MapCheckFrame extends JFrame {
     }
 
     private void initializeMainPanel() throws IOException {
-        int height = 170 + (countMaps() * 30);
+        int height = 220 + (countMaps() * 30);
 
         downloadButton = new JButton("Download");
         addMapButton = new JButton("Add");
@@ -119,8 +118,8 @@ public class MapCheckFrame extends JFrame {
 
         downloadButton.setBounds(150, 20, 150, 40);
         instSelectButton.setBounds(0, 20, 150, 40);
-        selectAllButton.setBounds(0, 60, 150, 40);
-        deSelectAllButton.setBounds(150, 60, 150, 40);
+        selectAllButton.setBounds(0, 62, 150, 40);
+        deSelectAllButton.setBounds(150, 62, 150, 40);
         urlField.setBounds(10, height - 70, 270, 40);
         addMapButton.setBounds(10, height - 30, 60, 30);
         progressBar.setBounds(12, height - 100, 265, 30);
@@ -147,7 +146,8 @@ public class MapCheckFrame extends JFrame {
     }
 
     private void addCheckBoxes() {
-        int yPos = 100;
+        checkBoxes = getCheckBoxes();
+        int yPos = 120;
         for (JCheckBox c : checkBoxes.keySet()) {
             c.addActionListener(e -> {
                 if (c.isSelected()) {
@@ -257,7 +257,7 @@ public class MapCheckFrame extends JFrame {
         currentStep++;
         int progress = (int) ((double) currentStep / ((instancePaths.size() * selectedMaps.size()) + (selectedMaps.size() * 2)) * 100);
         SwingUtilities.invokeLater(() -> progressBar.setValue(progress));
-        System.out.println("Progress set to: " + progress);
+//        System.out.println("Progress set to: " + progress);
     }
 
     private void resetProgressBar() {

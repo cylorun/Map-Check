@@ -5,10 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63c0ded9-9da0-40f4-b6cb-504c6c512873" name="Changes" comment="clea">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/FileUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/MapCheckFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/MapCheckFrame.java" afterDir="false" />
     </list>
