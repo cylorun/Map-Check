@@ -1,62 +1,69 @@
 package me.cylorun;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.*;
-import org.apache.commons.io.FileUtils;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static me.cylorun.MapCheckFrame.downloadedMapsPaths;
-
 
 public class FileUtil {
 
-    public static void downloadMaps(String instance, List<String> maps) {
-        for (String fileURL : maps) {
-            try {
-                URL url = new URL(fileURL);
+    public static List<String> downloadToTemp(List<String> maps){
+        List<String> downloadedMapsPaths = new ArrayList<>();
+        List<String> newSavesPaths = new ArrayList<>();
+
+        String tempFolder = Path.of(System.getProperty("user.dir"), "mc_temp").toString();
+        new File(tempFolder).mkdir();
+        try {
+            for (String fileURL : maps) {
                 String fileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
-                String saveFilePath = Paths.get(instance, fileName).toString();
-                Files.copy(url.openStream(), Path.of(saveFilePath));
-
+                String saveFilePath = Paths.get(tempFolder, fileName).toString();
+                Files.copy(new URL(fileURL).openStream(), Path.of(saveFilePath));
                 downloadedMapsPaths.add(saveFilePath);
+                MapCheckFrame.updateProgressBar();
 
-                for (String path : downloadedMapsPaths) {
-                    unZip(path);
-                }
             }
-            catch (IOException e){
-                e.printStackTrace();
+            for (String path : downloadedMapsPaths) {
+                newSavesPaths.add(unzipFolder(path));
+                MapCheckFrame.updateProgressBar();
+
+
             }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        return newSavesPaths;
     }
 
-
-    public static void unZip(String file) {
-        String extractPath = file.replace(".zip", "");
-        if (new File(file).exists() && !new File(file).isDirectory()) {
-            try (ZipFile zipFile = new ZipFile(file)) {
-                File targetDir = new File(extractPath);
-
+    public static String unzipFolder(String zipFilePath) throws IOException {
+        String extractPath = zipFilePath.replace(".zip", "").replace(".rar", "");
+        String savesFile = "";
+        if (new File(zipFilePath).exists() && !new File(zipFilePath).isDirectory()) {
+            try (ZipFile zipFile = new ZipFile(zipFilePath)) {
                 Enumeration<? extends ZipEntry> entries = zipFile.entries();
                 boolean match = false;
                 while (entries.hasMoreElements()) {
 
                     ZipEntry entry = entries.nextElement();
                     String entryName = entry.getName();
-                    File outputFile = new File(targetDir.getParentFile(), entryName);
+                    File outputFile = new File(new File(extractPath).getParentFile(), entryName);
 
-                    if (!match && !outputFile.getParentFile().getAbsolutePath().endsWith("saves")) {
-                        downloadedMapsPaths.add(String.valueOf(outputFile.getParentFile()));
-                        downloadedMapsPaths.remove(file);
-                        System.out.println(outputFile.getParentFile().getAbsolutePath()+" feinburh");
+                    if (!match && !outputFile.getParentFile().getAbsolutePath().endsWith("saves") && !outputFile.getParentFile().getAbsolutePath().endsWith("mc_temp")) {
+                        savesFile = outputFile.getParentFile().getAbsolutePath();
+                        System.out.println(savesFile);
                         match = true;
                     }
 
@@ -78,16 +85,28 @@ public class FileUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new File(file).delete();
+            new File(zipFilePath).delete();
         }
+        return savesFile;
+    }
+
+    public static void copyFromTemp(List<String> instances, List<String> tempPaths) {
+        System.out.println("Instance Paths: " + instances);
+        System.out.println("World Paths: " + tempPaths);
+        for (String instance : instances) {
+            for (String map : tempPaths) {
+                MapCheckFrame.updateProgressBar();
+                copyFolder(map.replace(".zip", ""), instance);
+            }
+        }
+        tempPaths.clear();
+
     }
 
 
-    public static void copyFolder(File source, File destination) {
+    public static void copyFolder(String source, String destination) {
         try {
-            if (source.exists()) {
-                FileUtils.copyDirectoryToDirectory(source, destination);
-            }
+            FileUtils.copyDirectoryToDirectory(new File(source), new File(destination));
         } catch (IOException e) {
             e.printStackTrace();
         }

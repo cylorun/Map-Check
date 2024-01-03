@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.cylorun'
-version = ''
+version = '4.0.0'
 
 repositories {
     mavenCentral()
@@ -16,7 +16,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'com.formdev:flatlaf:3.2'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
 
 }
 
