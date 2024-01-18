@@ -23,13 +23,13 @@ public class FileUtil {
         List<String> downloadedMapsPaths = new ArrayList<>();
         List<String> newSavesPaths = new ArrayList<>();
 
-        String tempFolder = Path.of(System.getProperty("user.dir"), "mc_temp").toString();
+        String tempFolder = Paths.get(System.getProperty("user.dir"), "mc_temp").toString();
         new File(tempFolder).mkdir();
         try {
             for (String fileURL : maps) {
                 String fileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
                 String saveFilePath = Paths.get(tempFolder, fileName).toString();
-                Files.copy(new URL(fileURL).openStream(), Path.of(saveFilePath));
+                Files.copy(new URL(fileURL).openStream(), Paths.get(saveFilePath));
                 downloadedMapsPaths.add(saveFilePath);
                 MapCheckFrame.updateProgressBar();
 
@@ -63,7 +63,6 @@ public class FileUtil {
 
                     if (!match && !outputFile.getParentFile().getAbsolutePath().endsWith("saves") && !outputFile.getParentFile().getAbsolutePath().endsWith("mc_temp")) {
                         savesFile = outputFile.getParentFile().getAbsolutePath();
-                        System.out.println(savesFile);
                         match = true;
                     }
 

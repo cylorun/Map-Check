@@ -5,7 +5,12 @@ plugins {
 }
 
 group = 'me.cylorun'
-version = '4.0.0'
+version = '4.0.1'
+
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
 
 repositories {
     mavenCentral()

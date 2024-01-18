@@ -62,7 +62,7 @@ public class MapCheckFrame extends JFrame {
         if (!new File("maps.json").exists()) {
             try {
                 URL url = new URL("https://gist.github.com/cylorun/3cd5d459d9adc9ad28608e8ed606aadb/raw/2f393a01f9cb847e222c8b9f0b1dd5f222d1e563/maps.json");
-                Files.copy(url.openStream(), Path.of("maps.json"));
+                Files.copy(url.openStream(), Paths.get("maps.json"));
             } catch (IOException e) {
                 exceptionPane(e);
             }
@@ -173,6 +173,10 @@ public class MapCheckFrame extends JFrame {
         addMapButton.addActionListener(e -> {
             String url = urlField.getText();
             String mapName = "Unknown Map";
+            if (url.isEmpty()){
+                JOptionPane.showMessageDialog(null,"Url missing");
+                return;
+            }
             if (url.endsWith(".zip") || url.endsWith(".rar")) {
                 String[] split = url.split("/");
                 if (split.length > 1) {
@@ -257,7 +261,6 @@ public class MapCheckFrame extends JFrame {
         currentStep++;
         int progress = (int) ((double) currentStep / ((instancePaths.size() * selectedMaps.size()) + (selectedMaps.size() * 2)) * 100);
         SwingUtilities.invokeLater(() -> progressBar.setValue(progress));
-//        System.out.println("Progress set to: " + progress);
     }
 
     private void resetProgressBar() {
@@ -271,7 +274,7 @@ public class MapCheckFrame extends JFrame {
             List<String> downloadedMapsPaths = FileUtil.downloadToTemp(selectedMaps);
             FileUtil.copyFromTemp(instancePaths, downloadedMapsPaths);
             try {
-                FileUtils.deleteDirectory(new File(Path.of(System.getProperty("user.dir"), "mc_temp").toString()));
+                FileUtils.deleteDirectory(new File(Paths.get(System.getProperty("user.dir"), "mc_temp").toString()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
