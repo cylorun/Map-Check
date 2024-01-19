@@ -53,6 +53,7 @@ public class MapCheckFrame extends JFrame {
         try {
             initializeMainPanel();
         } catch (IOException e) {
+            exceptionPane(e);
             throw new RuntimeException(e);
         }
         this.pack();
@@ -128,7 +129,7 @@ public class MapCheckFrame extends JFrame {
 
     private Map<JCheckBox, String> getCheckBoxes() {
         Map<JCheckBox, String> checkBoxes = new HashMap<>();
-        String jsonContent = null;
+        String jsonContent;
         try {
             jsonContent = new String(Files.readAllBytes(Paths.get("maps.json")));
         } catch (IOException e) {
@@ -214,6 +215,7 @@ public class MapCheckFrame extends JFrame {
                     String savesPath = Paths.get(mcDir.toString()).resolve("saves").toString();
                     if (mcDir.exists()) {
                         instancePaths.add(savesPath);
+                        System.out.println("Added: "+savesPath);
                     } else {
 
                         int choice = JOptionPane.showConfirmDialog(
@@ -253,8 +255,9 @@ public class MapCheckFrame extends JFrame {
         });
     }
 
-    private void exceptionPane(Exception e) {
-        JOptionPane.showMessageDialog(null, "Error occured" + e.toString());
+    public static void exceptionPane(Exception e) {
+        JOptionPane.showMessageDialog(null, "Error occured\n" + e.toString());
+        System.err.println(e);
     }
 
     public static void updateProgressBar() {
@@ -276,6 +279,7 @@ public class MapCheckFrame extends JFrame {
             try {
                 FileUtils.deleteDirectory(new File(Paths.get(System.getProperty("user.dir"), "mc_temp").toString()));
             } catch (IOException e) {
+                exceptionPane(e);
                 throw new RuntimeException(e);
             }
             Toolkit.getDefaultToolkit().beep();

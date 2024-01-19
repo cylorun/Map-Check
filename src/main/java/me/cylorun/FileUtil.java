@@ -41,8 +41,8 @@ public class FileUtil {
 
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            MapCheckFrame.exceptionPane(e);
         }
 
         return newSavesPaths;
@@ -81,8 +81,8 @@ public class FileUtil {
                         }
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                MapCheckFrame.exceptionPane(e);
             }
             new File(zipFilePath).delete();
         }
@@ -107,7 +107,7 @@ public class FileUtil {
         try {
             FileUtils.copyDirectoryToDirectory(new File(source), new File(destination));
         } catch (IOException e) {
-            e.printStackTrace();
+            MapCheckFrame.exceptionPane(e);
         }
     }
 }
