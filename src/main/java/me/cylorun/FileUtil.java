@@ -91,7 +91,7 @@ public class FileUtil {
 
     public static void copyFromTemp(List<String> instances, List<String> tempPaths) {
         System.out.println("Instance Paths: " + instances);
-        System.out.println("World Paths: " + tempPaths);
+        System.out.println("Map Paths: " + tempPaths);
         for (String instance : instances) {
             for (String map : tempPaths) {
                 MapCheckFrame.updateProgressBar();

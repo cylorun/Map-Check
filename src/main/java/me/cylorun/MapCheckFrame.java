@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +61,7 @@ public class MapCheckFrame extends JFrame {
     private void downloadMapInfo() {
         if (!new File("maps.json").exists()) {
             try {
-                URL url = new URL("https://gist.github.com/cylorun/3cd5d459d9adc9ad28608e8ed606aadb/raw/2f393a01f9cb847e222c8b9f0b1dd5f222d1e563/maps.json");
+                URL url = new URL("https://gist.github.com/cylorun/3cd5d459d9adc9ad28608e8ed606aadb/raw/d6c560d7f2925a22dd65004a491e02a634decc3b/maps.json");
                 Files.copy(url.openStream(), Paths.get("maps.json"));
             } catch (IOException e) {
                 exceptionPane(e);
@@ -94,7 +93,7 @@ public class MapCheckFrame extends JFrame {
     }
 
     private void initializeMainPanel() throws IOException {
-        int height = 220 + (countMaps() * 30);
+        int height = 220 + (getMapCount() * 30);
 
         downloadButton = new JButton("Download");
         addMapButton = new JButton("Add");
@@ -164,7 +163,7 @@ public class MapCheckFrame extends JFrame {
         }
     }
 
-    private int countMaps() throws IOException {
+    private int getMapCount() throws IOException {
         String jsonContent = new String(Files.readAllBytes(Paths.get("maps.json")));
         JsonArray ja = JsonParser.parseString(jsonContent).getAsJsonArray();
         return ja.size();
@@ -280,7 +279,6 @@ public class MapCheckFrame extends JFrame {
                 FileUtils.deleteDirectory(new File(Paths.get(System.getProperty("user.dir"), "mc_temp").toString()));
             } catch (IOException e) {
                 exceptionPane(e);
-                throw new RuntimeException(e);
             }
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(null, "Finished downloading", "Download Status", JOptionPane.INFORMATION_MESSAGE);
