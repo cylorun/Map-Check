@@ -19,9 +19,9 @@ import java.util.zip.ZipFile;
 
 public class FileUtil {
 
-    public static List<Path> downloadToTemp(List<String> maps){
+    public static List<String> downloadToTemp(List<String> maps){
         List<String> downloadedMapsPaths = new ArrayList<>();
-        List<Path> newSavesPaths = new ArrayList<>();
+        List<String> newSavesPaths = new ArrayList<>();
 
         String tempFolder = Paths.get(System.getProperty("user.dir"), "mc_temp").toString();
         new File(tempFolder).mkdir();
@@ -48,9 +48,10 @@ public class FileUtil {
         return newSavesPaths;
     }
 
-    public static Path unzipFolder(String zipFilePath) throws IOException {
-        String extractPath = zipFilePath.substring(0, zipFilePath.lastIndexOf('.'));
-        Path savesFile = null;
+    public static String unzipFolder(String zipFilePath) throws IOException {
+        String[] split = zipFilePath.split(".");
+        String extractPath =
+        String savesFile = "";
         if (new File(zipFilePath).exists() && !new File(zipFilePath).isDirectory()) {
             try (ZipFile zipFile = new ZipFile(zipFilePath)) {
                 Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -62,7 +63,7 @@ public class FileUtil {
                     File outputFile = new File(new File(extractPath).getParentFile(), entryName);
 
                     if (!match && !outputFile.getParentFile().getAbsolutePath().endsWith("saves") && !outputFile.getParentFile().getAbsolutePath().endsWith("mc_temp")) {
-                        savesFile = outputFile.getParentFile().toPath();
+                        savesFile = outputFile.getParentFile().getAbsolutePath();
                         match = true;
                     }
 
@@ -89,21 +90,20 @@ public class FileUtil {
         return savesFile;
     }
 
-    public static void copyFromTemp(List<Path> instances, List<Path> tempPaths) {
+    public static void copyFromTemp(List<String> instances, List<String> tempPaths) {
         System.out.println("Instance Paths: " + instances);
         System.out.println("World Paths: " + tempPaths);
-        for (Path instance : instances) {
-            for (Path map : tempPaths) {
+        for (String instance : instances) {
+            for (String map : tempPaths) {
                 MapCheckFrame.updateProgressBar();
-                copyFolder(FileUtil.removeFileExt(map.toString()), instance.toString());
+                copyFolder(map.replace(".zip", ""), instance);
             }
         }
         tempPaths.clear();
+
     }
 
-    private static String removeFileExt(String filePath){
-       return filePath.substring(0, filePath.lastIndexOf('.'));
-    }
+
     public static void copyFolder(String source, String destination) {
         try {
             FileUtils.copyDirectoryToDirectory(new File(source), new File(destination));

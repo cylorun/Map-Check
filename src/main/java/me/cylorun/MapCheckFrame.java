@@ -29,7 +29,7 @@ public class MapCheckFrame extends JFrame {
     private JButton deSelectAllButton;
     private static JProgressBar progressBar;
     private static List<String> selectedMaps = new ArrayList<>();
-    private static List<Path> instancePaths = new ArrayList<>();
+    private static List<String> instancePaths = new ArrayList<>();
     private Map<JCheckBox, String> checkBoxes;
     private static int currentStep = 0;
 
@@ -214,7 +214,7 @@ public class MapCheckFrame extends JFrame {
                     File mcDir = new File(file, "/.minecraft");
                     String savesPath = Paths.get(mcDir.toString()).resolve("saves").toString();
                     if (mcDir.exists()) {
-                        instancePaths.add(Paths.get(savesPath));
+                        instancePaths.add(savesPath);
                         System.out.println("Added: "+savesPath);
                     } else {
 
@@ -226,7 +226,7 @@ public class MapCheckFrame extends JFrame {
                         );
 
                         if (choice == JOptionPane.YES_OPTION) {
-                            instancePaths.add(Paths.get(mcDir.getParent()));
+                            instancePaths.add(mcDir.getParent());
                         }
                     }
                 }
@@ -274,7 +274,7 @@ public class MapCheckFrame extends JFrame {
     private void downloadMaps() {
         resetProgressBar();
         if (!instancePaths.isEmpty() || !selectedMaps.isEmpty()) {
-            List<Path> downloadedMapsPaths = FileUtil.downloadToTemp(selectedMaps);
+            List<String> downloadedMapsPaths = FileUtil.downloadToTemp(selectedMaps);
             FileUtil.copyFromTemp(instancePaths, downloadedMapsPaths);
             try {
                 FileUtils.deleteDirectory(new File(Paths.get(System.getProperty("user.dir"), "mc_temp").toString()));
