@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63c0ded9-9da0-40f4-b6cb-504c6c512873" name="Changes" comment="clea">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/FileUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/MapCheckFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/MapCheckFrame.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +66,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "deletionFromPopupRequiresConfirmation": "false",
-    "git-widget-placeholder": "Merging main",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -142,6 +139,7 @@
       <option name="presentableId" value="Default" />
       <updated>1693997516894</updated>
       <workItem from="1710281105299" duration="938000" />
+      <workItem from="1710282238574" duration="3000" />
     </task>
     <task id="LOCAL-00001" summary="works">
       <option name="closed" value="true" />

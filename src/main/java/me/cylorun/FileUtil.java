@@ -49,8 +49,7 @@ public class FileUtil {
     }
 
     public static String unzipFolder(String zipFilePath) throws IOException {
-        String[] split = zipFilePath.split(".");
-        String extractPath =
+        String extractPath = removeFileExt(zipFilePath);
         String savesFile = "";
         if (new File(zipFilePath).exists() && !new File(zipFilePath).isDirectory()) {
             try (ZipFile zipFile = new ZipFile(zipFilePath)) {
@@ -89,7 +88,9 @@ public class FileUtil {
         }
         return savesFile;
     }
-
+    public static String removeFileExt(String s){
+        return s.substring(0,s.lastIndexOf('.'));
+    }
     public static void copyFromTemp(List<String> instances, List<String> tempPaths) {
         System.out.println("Instance Paths: " + instances);
         System.out.println("World Paths: " + tempPaths);
