@@ -2,6 +2,7 @@ package me.cylorun;
 
 import org.apache.commons.io.FileUtils;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,25 +26,30 @@ public class FileUtil {
 
         String tempFolder = Paths.get(System.getProperty("user.dir"), "mc_temp").toString();
         new File(tempFolder).mkdir();
-        try {
             for (String fileURL : maps) {
                 String fileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
                 String saveFilePath = Paths.get(tempFolder, fileName).toString();
-                Files.copy(new URL(fileURL).openStream(), Paths.get(saveFilePath));
+                try {
+                    Files.copy(new URL(fileURL).openStream(), Paths.get(saveFilePath));
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null,"Failed to download:\n"+fileURL,"Error",JOptionPane.ERROR_MESSAGE);
+                }
                 downloadedMapsPaths.add(saveFilePath);
                 MapCheckFrame.updateProgressBar();
 
             }
             for (String path : downloadedMapsPaths) {
-                newSavesPaths.add(unzipFolder(path));
+                try {
+                    newSavesPaths.add(unzipFolder(path));
+                } catch (IOException e) {
+                    MapCheckFrame.exceptionPane(e);
+                }
                 MapCheckFrame.updateProgressBar();
 
 
             }
 
-        } catch (Exception e) {
-            MapCheckFrame.exceptionPane(e);
-        }
+
 
         return newSavesPaths;
     }
@@ -91,7 +97,7 @@ public class FileUtil {
     public static String removeFileExt(String s){
         return s.substring(0,s.lastIndexOf('.'));
     }
-    public static void copyFromTemp(List<String> instances, List<String> tempPaths) {
+    public static void copyFromTemp(List<String> instances, List<String> tempPaths) throws IOException {
         System.out.println("Instance Paths: " + instances);
         System.out.println("World Paths: " + tempPaths);
         for (String instance : instances) {
@@ -105,11 +111,8 @@ public class FileUtil {
     }
 
 
-    public static void copyFolder(String source, String destination) {
-        try {
+    public static void copyFolder(String source, String destination) throws IOException {
             FileUtils.copyDirectoryToDirectory(new File(source), new File(destination));
-        } catch (IOException e) {
-            MapCheckFrame.exceptionPane(e);
-        }
+
     }
 }

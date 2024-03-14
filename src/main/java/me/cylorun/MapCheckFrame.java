@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,6 +33,15 @@ public class MapCheckFrame extends JFrame {
     private static List<String> instancePaths = new ArrayList<>();
     private Map<JCheckBox, String> checkBoxes;
     private static int currentStep = 0;
+    private static final URL GIST_URL;
+
+    static {
+        try {
+            GIST_URL = new URL("https://gist.github.com/cylorun/3cd5d459d9adc9ad28608e8ed606aadb/raw/1a24430bd51246cea21ecdf66a509a0c69de5d97/maps.json");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public MapCheckFrame() throws IOException {
         mainPanel = new JPanel();
@@ -62,8 +72,7 @@ public class MapCheckFrame extends JFrame {
     private void downloadMapInfo() {
         if (!new File("maps.json").exists()) {
             try {
-                URL url = new URL("https://gist.github.com/cylorun/3cd5d459d9adc9ad28608e8ed606aadb/raw/2f393a01f9cb847e222c8b9f0b1dd5f222d1e563/maps.json");
-                Files.copy(url.openStream(), Paths.get("maps.json"));
+                Files.copy(GIST_URL.openStream(), Paths.get("maps.json"));
             } catch (IOException e) {
                 exceptionPane(e);
             }
@@ -78,7 +87,7 @@ public class MapCheckFrame extends JFrame {
             exceptionPane(e);
             throw new RuntimeException(e);
         }
-        label = label.replace(".zip", "");
+        label = FileUtil.removeFileExt(label);
         JsonObject obj = new JsonObject();
         obj.addProperty("label", label);
         obj.addProperty("url", url);
@@ -181,10 +190,10 @@ public class MapCheckFrame extends JFrame {
             if (url.endsWith(".zip") || url.endsWith(".rar")) {
                 String[] split = url.split("/");
                 if (split.length > 1) {
-                    mapName = split[split.length - 1].replace(".zip", "").replace(".rar", "");
+                    mapName = FileUtil.removeFileExt(split[split.length - 1]);
                 }
             } else {
-                mapName = "Unknown Name";
+                mapName = "Unknown";
             }
             if (url.endsWith(".zip") || url.endsWith(".rar")) {
                 addMapToJson("maps.json", mapName, url);
@@ -196,10 +205,7 @@ public class MapCheckFrame extends JFrame {
             }
         });
 
-        downloadButton.addActionListener(e -> {
-            new Thread(this::downloadMaps).start();
-
-        });
+        downloadButton.addActionListener(e -> new Thread(this::downloadMaps).start());
 
         instSelectButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.home"), "Desktop"));
@@ -211,7 +217,7 @@ public class MapCheckFrame extends JFrame {
             if (response == JFileChooser.APPROVE_OPTION) {
                 File[] selectedFiles = fileChooser.getSelectedFiles();
                 for (File file : selectedFiles) {
-                    File mcDir = new File(file, "/.minecraft");
+                    File mcDir = new File(file, ".minecraft");
                     String savesPath = Paths.get(mcDir.toString()).resolve("saves").toString();
                     if (mcDir.exists()) {
                         instancePaths.add(savesPath);
@@ -221,7 +227,7 @@ public class MapCheckFrame extends JFrame {
                         int choice = JOptionPane.showConfirmDialog(
                                 null,
                                 file.getAbsolutePath() + "\n is not a Minecraft directory \n Would you still like to add it?",
-                                "Invalid Directory",
+                                "Invalid MC Directory",
                                 JOptionPane.YES_NO_OPTION
                         );
 
@@ -256,7 +262,7 @@ public class MapCheckFrame extends JFrame {
     }
 
     public static void exceptionPane(Exception e) {
-        JOptionPane.showMessageDialog(null, "Error occured\n" + e.toString());
+        JOptionPane.showMessageDialog(null, "Error occured\n" + e.toString(),"Error",JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
     }
 
@@ -272,18 +278,22 @@ public class MapCheckFrame extends JFrame {
     }
 
     private void downloadMaps() {
+        boolean success = false;
         resetProgressBar();
         if (!instancePaths.isEmpty() || !selectedMaps.isEmpty()) {
             List<String> downloadedMapsPaths = FileUtil.downloadToTemp(selectedMaps);
-            FileUtil.copyFromTemp(instancePaths, downloadedMapsPaths);
             try {
+                FileUtil.copyFromTemp(instancePaths, downloadedMapsPaths);
                 FileUtils.deleteDirectory(new File(Paths.get(System.getProperty("user.dir"), "mc_temp").toString()));
+                success = true;
             } catch (IOException e) {
                 exceptionPane(e);
-                throw new RuntimeException(e);
             }
             Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(null, "Finished downloading", "Download Status", JOptionPane.INFORMATION_MESSAGE);
+            if (success){
+                JOptionPane.showMessageDialog(null, "Finished downloading", "Download Status", JOptionPane.INFORMATION_MESSAGE);
+
+            }
         } else {
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(null, "No maps or instances selected", "Download Status", JOptionPane.WARNING_MESSAGE);
