@@ -3,14 +3,12 @@ package me.cylorun;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -19,22 +17,25 @@ import java.util.zip.ZipFile;
 
 
 public class FileUtil {
+    private  static Path TEMP_FOLDER = Paths.get(System.getProperty("user.dir"), "mc_temp");
 
     public static List<String> downloadToTemp(List<String> maps){
         List<String> downloadedMapsPaths = new ArrayList<>();
         List<String> newSavesPaths = new ArrayList<>();
 
-        String tempFolder = Paths.get(System.getProperty("user.dir"), "mc_temp").toString();
-        new File(tempFolder).mkdir();
-            for (String fileURL : maps) {
+        try {
+            Files.createDirectory(TEMP_FOLDER);
+        } catch (IOException ignored) {
+        }
+        for (String fileURL : maps) {
                 String fileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
-                String saveFilePath = Paths.get(tempFolder, fileName).toString();
-                try {
-                    Files.copy(new URL(fileURL).openStream(), Paths.get(saveFilePath));
+                Path saveFilePath = Paths.get(TEMP_FOLDER.toString(), fileName);
+                try (InputStream in = new BufferedInputStream(new URL(fileURL).openStream())) {
+                    Files.copy(in, saveFilePath, StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(null,"Failed to download:\n"+fileURL,"Error",JOptionPane.ERROR_MESSAGE);
                 }
-                downloadedMapsPaths.add(saveFilePath);
+                downloadedMapsPaths.add(saveFilePath.toString());
                 MapCheckFrame.updateProgressBar();
 
             }
@@ -56,7 +57,7 @@ public class FileUtil {
 
     public static String unzipFolder(String zipFilePath) throws IOException {
         String extractPath = removeFileExt(zipFilePath);
-        String savesFile = "";
+        String savesFile = null;
         if (new File(zipFilePath).exists() && !new File(zipFilePath).isDirectory()) {
             try (ZipFile zipFile = new ZipFile(zipFilePath)) {
                 Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -90,7 +91,7 @@ public class FileUtil {
             } catch (Exception e) {
                 MapCheckFrame.exceptionPane(e);
             }
-            new File(zipFilePath).delete();
+            Files.delete(Paths.get(zipFilePath));
         }
         return savesFile;
     }
