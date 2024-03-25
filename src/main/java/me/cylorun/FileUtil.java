@@ -9,17 +9,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 
 public class FileUtil {
-    private  static Path TEMP_FOLDER = Paths.get(System.getProperty("user.dir"), "mc_temp");
+    private static Path TEMP_FOLDER = Paths.get(System.getProperty("user.dir"), "mc_temp");
 
-    public static List<String> downloadToTemp(List<String> maps){
+    public static List<String> downloadToTemp(List<String> maps) {
         List<String> downloadedMapsPaths = new ArrayList<>();
         List<String> newSavesPaths = new ArrayList<>();
 
@@ -27,33 +25,38 @@ public class FileUtil {
             Files.createDirectory(TEMP_FOLDER);
         } catch (IOException ignored) {
         }
+
         for (String fileURL : maps) {
-                String fileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
-                Path saveFilePath = Paths.get(TEMP_FOLDER.toString(), fileName);
-                try (InputStream in = new BufferedInputStream(new URL(fileURL).openStream())) {
-                    Files.copy(in, saveFilePath, StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
-                    JOptionPane.showMessageDialog(null,"Failed to download:\n"+fileURL,"Error",JOptionPane.ERROR_MESSAGE);
-                }
-                downloadedMapsPaths.add(saveFilePath.toString());
-                MapCheckFrame.updateProgressBar();
+            int idx = fileURL.lastIndexOf('.');
+            String end = idx == -1 ? ".zip" : fileURL.substring(idx);
 
+            if(end.length() > 4){
+                end =  ".zip";
             }
-            for (String path : downloadedMapsPaths) {
-                try {
-                    newSavesPaths.add(unzipFolder(path));
-                } catch (IOException e) {
-                    MapCheckFrame.exceptionPane(e);
-                }
-                MapCheckFrame.updateProgressBar();
-
-
+            String fileName = String.valueOf(maps.indexOf(fileURL)) + end;
+            Path saveFilePath = Paths.get(TEMP_FOLDER.toString(), fileName);
+            System.out.println("Downloading map from "+fileURL);
+            try (InputStream in = new BufferedInputStream(new URL(fileURL).openStream())) {
+                Files.copy(in, saveFilePath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Failed to download:\n" + fileURL, "Error", JOptionPane.ERROR_MESSAGE);
             }
+            downloadedMapsPaths.add(saveFilePath.toString());
+            MapCheckFrame.updateProgressBar();
+        }
 
-
+        for (String path : downloadedMapsPaths) {
+            try {
+                newSavesPaths.add(unzipFolder(path));
+            } catch (IOException e) {
+                MapCheckFrame.exceptionPane(e);
+            }
+            MapCheckFrame.updateProgressBar();
+        }
 
         return newSavesPaths;
     }
+
 
     public static String unzipFolder(String zipFilePath) throws IOException {
         String extractPath = removeFileExt(zipFilePath);
@@ -95,16 +98,20 @@ public class FileUtil {
         }
         return savesFile;
     }
-    public static String removeFileExt(String s){
-        return s.substring(0,s.lastIndexOf('.'));
+
+    public static String removeFileExt(String s) {
+        return s.substring(0, s.lastIndexOf('.'));
     }
+
     public static void copyFromTemp(List<String> instances, List<String> tempPaths) throws IOException {
         System.out.println("Instance Paths: " + instances);
         System.out.println("World Paths: " + tempPaths);
         for (String instance : instances) {
             for (String map : tempPaths) {
                 MapCheckFrame.updateProgressBar();
-                copyFolder(map.replace(".zip", ""), instance);
+                if (map != null) {
+                    copyFolder(map.replace(".zip", ""), instance);
+                }
             }
         }
         tempPaths.clear();
@@ -113,7 +120,7 @@ public class FileUtil {
 
 
     public static void copyFolder(String source, String destination) throws IOException {
-            FileUtils.copyDirectoryToDirectory(new File(source), new File(destination));
+        FileUtils.copyDirectoryToDirectory(new File(source), new File(destination));
 
     }
 }

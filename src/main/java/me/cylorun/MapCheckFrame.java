@@ -37,7 +37,7 @@ public class MapCheckFrame extends JFrame {
 
     static {
         try {
-            GIST_URL = new URL("https://gist.github.com/cylorun/3cd5d459d9adc9ad28608e8ed606aadb/raw/1a24430bd51246cea21ecdf66a509a0c69de5d97/maps.json");
+            GIST_URL = new URL("https://gist.github.com/cylorun/3cd5d459d9adc9ad28608e8ed606aadb/raw/cbc12dad6a5ddc08daed0b7ee2c3247fcffc57a3/maps.json");
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -103,7 +103,7 @@ public class MapCheckFrame extends JFrame {
     }
 
     private void initializeMainPanel() throws IOException {
-        int height = 220 + (countMaps() * 30);
+        int height = 240 + (countMaps() * 30);
 
         downloadButton = new JButton("Download");
         addMapButton = new JButton("Add");
@@ -126,13 +126,18 @@ public class MapCheckFrame extends JFrame {
         mainPanel.add(selectAllButton);
         addCheckBoxes();
 
-        downloadButton.setBounds(150, 20, 150, 40);
-        instSelectButton.setBounds(0, 20, 150, 40);
-        selectAllButton.setBounds(0, 62, 150, 40);
-        deSelectAllButton.setBounds(150, 62, 150, 40);
+        downloadButton.setBounds(150, 40, 150, 40);
+        instSelectButton.setBounds(0, 40, 150, 40);
+        selectAllButton.setBounds(0, 82, 150, 40);
+        deSelectAllButton.setBounds(150, 82, 150, 40);
         urlField.setBounds(10, height - 70, 270, 40);
         addMapButton.setBounds(10, height - 30, 60, 30);
         progressBar.setBounds(12, height - 100, 265, 30);
+        JLabel note = new JLabel("<html><b>Note:</b> Download speeds may be slow<br> depending on the file hosting service.</html>");
+        note.setBounds(40,-15,250,70);
+        note.setToolTipText("Download speeds for maps from some file hosts can be really slow to download, for example the Zero cycle map.");
+        mainPanel.add(note);
+
 
     }
 
@@ -157,7 +162,7 @@ public class MapCheckFrame extends JFrame {
 
     private void addCheckBoxes() {
         checkBoxes = getCheckBoxes();
-        int yPos = 120;
+        int yPos = 140;
         for (JCheckBox c : checkBoxes.keySet()) {
             c.addActionListener(e -> {
                 if (c.isSelected()) {
@@ -183,8 +188,8 @@ public class MapCheckFrame extends JFrame {
         addMapButton.addActionListener(e -> {
             String url = urlField.getText();
             String mapName = "Unknown Map";
-            if (url.isEmpty()){
-                JOptionPane.showMessageDialog(null,"Url missing");
+            if (url.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Url missing");
                 return;
             }
             if (url.endsWith(".zip") || url.endsWith(".rar")) {
@@ -221,7 +226,7 @@ public class MapCheckFrame extends JFrame {
                     String savesPath = Paths.get(mcDir.toString()).resolve("saves").toString();
                     if (mcDir.exists()) {
                         instancePaths.add(savesPath);
-                        System.out.println("Added: "+savesPath);
+                        System.out.println("Added: " + savesPath);
                     } else {
 
                         int choice = JOptionPane.showConfirmDialog(
@@ -262,7 +267,7 @@ public class MapCheckFrame extends JFrame {
     }
 
     public static void exceptionPane(Exception e) {
-        JOptionPane.showMessageDialog(null, "Error occured\n" + e.toString(),"Error",JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Error occured\n" + e.toString(), "Error", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
     }
 
@@ -280,7 +285,7 @@ public class MapCheckFrame extends JFrame {
     private void downloadMaps() {
         boolean success = false;
         resetProgressBar();
-        if (!instancePaths.isEmpty() || !selectedMaps.isEmpty()) {
+        if (!instancePaths.isEmpty() && !selectedMaps.isEmpty()) {
             List<String> downloadedMapsPaths = FileUtil.downloadToTemp(selectedMaps);
             try {
                 FileUtil.copyFromTemp(instancePaths, downloadedMapsPaths);
@@ -290,8 +295,11 @@ public class MapCheckFrame extends JFrame {
                 exceptionPane(e);
             }
             Toolkit.getDefaultToolkit().beep();
-            if (success){
+            if (success) {
                 JOptionPane.showMessageDialog(null, "Finished downloading", "Download Status", JOptionPane.INFORMATION_MESSAGE);
+
+            } else{
+                JOptionPane.showMessageDialog(null, "Failed to download some / all maps\n:(", "Download Status", JOptionPane.INFORMATION_MESSAGE);
 
             }
         } else {
