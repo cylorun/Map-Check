@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63c0ded9-9da0-40f4-b6cb-504c6c512873" name="Changes" comment="clea">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/FileUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/MapCheckFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/MapCheckFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,7 +84,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.Main">
+  <component name="RunManager" selected="Gradle.Map-Check [shadowJar]">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="me.cylorun.Main" />
       <module name="Map-Check.main" />
@@ -152,7 +148,7 @@
       <workItem from="1710427589889" duration="5607000" />
       <workItem from="1710457365116" duration="980000" />
       <workItem from="1710539258893" duration="257000" />
-      <workItem from="1711406347416" duration="3436000" />
+      <workItem from="1711406347416" duration="4006000" />
     </task>
     <task id="LOCAL-00001" summary="works">
       <option name="closed" value="true" />
