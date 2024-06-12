@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -19,7 +18,7 @@ import java.util.zip.ZipFile;
 
 public class FileUtil {
 
-    public static List<String> downloadToTemp(List<String> maps){
+    public static List<String> downloadToTemp(List<String> maps) {
         List<String> downloadedMapsPaths = new ArrayList<>();
         List<String> newSavesPaths = new ArrayList<>();
 
@@ -31,24 +30,22 @@ public class FileUtil {
                 String saveFilePath = Paths.get(tempFolder, fileName).toString();
                 Files.copy(new URL(fileURL).openStream(), Paths.get(saveFilePath));
                 downloadedMapsPaths.add(saveFilePath);
-                MapCheckFrame.updateProgressBar();
+                MapCheckFrame.getInstance().updateProgressBar();
 
             }
             for (String path : downloadedMapsPaths) {
                 newSavesPaths.add(unzipFolder(path));
-                MapCheckFrame.updateProgressBar();
-
-
+                MapCheckFrame.getInstance().updateProgressBar();
             }
 
         } catch (Exception e) {
-            MapCheckFrame.exceptionPane(e);
+            MapCheckFrame.showError(e);
         }
 
         return newSavesPaths;
     }
 
-    public static String unzipFolder(String zipFilePath) throws IOException {
+    public static String unzipFolder(String zipFilePath) {
         String extractPath = zipFilePath.replace(".zip", "").replace(".rar", "");
         String savesFile = "";
         if (new File(zipFilePath).exists() && !new File(zipFilePath).isDirectory()) {
@@ -82,7 +79,7 @@ public class FileUtil {
                     }
                 }
             } catch (Exception e) {
-                MapCheckFrame.exceptionPane(e);
+                MapCheckFrame.showError(e);
             }
             new File(zipFilePath).delete();
         }
@@ -94,12 +91,11 @@ public class FileUtil {
         System.out.println("Map Paths: " + tempPaths);
         for (String instance : instances) {
             for (String map : tempPaths) {
-                MapCheckFrame.updateProgressBar();
+                MapCheckFrame.getInstance().updateProgressBar();
                 copyFolder(map.replace(".zip", ""), instance);
             }
         }
         tempPaths.clear();
-
     }
 
 
@@ -107,7 +103,7 @@ public class FileUtil {
         try {
             FileUtils.copyDirectoryToDirectory(new File(source), new File(destination));
         } catch (IOException e) {
-            MapCheckFrame.exceptionPane(e);
+            MapCheckFrame.showError(e);
         }
     }
 }

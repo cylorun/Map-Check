@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.cylorun'
-version = '4.0.2'
+version = '4.1.0'
 
 compileJava {
     sourceCompatibility = '1.8'
@@ -30,6 +30,6 @@ test {
 }
 jar {
     manifest {
-        attributes 'Main-Class': 'me.cylorun.Main'
+        attributes 'Main-Class': 'me.cylorun.MapCheck'
     }
 }
