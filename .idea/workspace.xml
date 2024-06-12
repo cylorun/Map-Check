@@ -91,7 +91,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Gradle.Map-Check [shadowJar]">
+  <component name="RunManager" selected="Application.MapCheck">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="me.cylorun.Main" />
       <module name="Map-Check.main" />
