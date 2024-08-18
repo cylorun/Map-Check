@@ -1,7 +1,10 @@
 package me.cylorun;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
@@ -9,7 +12,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,7 +26,6 @@ import java.util.Map;
 public class MapCheckFrame extends JFrame {
     private final JPanel mainPanel;
     private JButton downloadButton;
-    private JButton addMapButton;
     private JTextField urlField;
     private JButton instSelectButton;
     private JButton selectAllButton;
@@ -31,16 +33,16 @@ public class MapCheckFrame extends JFrame {
     private JProgressBar progressBar;
     public List<String> selectedMaps = new ArrayList<>();
     public List<String> instancePaths = new ArrayList<>();
-    private Map<JCheckBox, String> checkBoxes;
+    private Map<JCheckBox, JsonObject> checkBoxes;
     private int currentStep = 0;
     private static MapCheckFrame instance;
 
     private MapCheckFrame() {
         this.mainPanel = new JPanel();
-        downloadMapInfo();
-        initializeMainPanel();
-        initializeActionListeners();
-        setupFrame();
+        this.downloadMapInfo();
+        this.initializeMainPanel();
+        this.initializeActionListeners();
+        this.setupFrame();
     }
 
     public static synchronized MapCheckFrame getInstance() {
@@ -60,46 +62,25 @@ public class MapCheckFrame extends JFrame {
         this.pack();
     }
 
-    private void reloadUI() {
+    private void reload() {
         this.mainPanel.removeAll();
         this.initializeMainPanel();
         this.pack();
     }
 
     private void downloadMapInfo() {
-        if (!new File("maps.json").exists()) {
-            try {
-                URL url = MapCheck.MAPS_URL;
-                Files.copy(url.openStream(), Paths.get("maps.json"));
-            } catch (IOException e) {
-                showError(e);
+        try {
+            if (Files.exists(Paths.get("maps.json"))) {
+                Files.delete(Paths.get("maps.json"));
             }
+
+            URL url = MapCheck.MAPS_URL;
+            Files.copy(url.openStream(), Paths.get("maps.json"));
+        } catch (IOException e) {
+            showError(e);
         }
     }
 
-    private void addMapToJson(String path, String label, String url) {
-        JsonArray jsonArray;
-        try {
-            jsonArray = JsonParser.parseString(new String(Files.readAllBytes(Paths.get(path)))).getAsJsonArray();
-        } catch (IOException e) {
-            showError(e);
-            return;
-        }
-        label = label.replace(".zip", "");
-        JsonObject obj = new JsonObject();
-        obj.addProperty("label", label);
-        obj.addProperty("url", url);
-        jsonArray.add(obj);
-        try (FileWriter fileWriter = new FileWriter("maps.json")) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            gson.toJson(jsonArray, fileWriter);
-        } catch (IOException e) {
-            showError(e);
-            return;
-        }
-        JOptionPane.showMessageDialog(null, String.format("Added the map %s with the link: \n %s", label, url));
-        this.reloadUI();
-    }
 
     private void initializeMainPanel() {
         int totalMaps = 0;
@@ -112,7 +93,6 @@ public class MapCheckFrame extends JFrame {
         int height = 220 + (totalMaps * 30);
 
         this.downloadButton = new JButton("Download");
-        this.addMapButton = new JButton("Add");
         this.urlField = new JTextField();
         this.instSelectButton = new JButton("Select Instances");
         this.progressBar = new JProgressBar(0, 100);
@@ -155,38 +135,38 @@ public class MapCheckFrame extends JFrame {
         this.mainPanel.add(progressBar, gbc);
 
         gbc.gridy = 3;
-        addCheckBoxes(gbc);
+        this.mainPanel.add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
+
+        gbc.gridy = 4;
+        this.addCheckBoxes(gbc);
 
         gbc.gridx = 0;
         gbc.gridy++;
         this.mainPanel.add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        this.mainPanel.add(new JLabel("Custom map URL"), gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        this.mainPanel.add(urlField, gbc);
-
-        gbc.gridy++;
-        this.mainPanel.add(addMapButton, gbc);
     }
 
-    private Map<JCheckBox, String> getCheckBoxes() {
-        Map<JCheckBox, String> checkBoxes = new HashMap<>();
+    private Map<JCheckBox, JsonObject> getCheckBoxes() {
+        Map<JCheckBox, JsonObject> checkBoxes = new HashMap<>();
         String jsonContent;
         try {
             jsonContent = new String(Files.readAllBytes(Paths.get("maps.json")));
+        } catch (FileNotFoundException e) {
+            MapCheckFrame.showError("Maps.json file not found, try re-launching map-check");
+            System.exit(0);
+            throw new RuntimeException(e);
         } catch (IOException e) {
+            MapCheckFrame.showError("Something weird happened: " + e);
+            System.exit(1);
             throw new RuntimeException(e);
         }
+
         JsonArray ja = JsonParser.parseString(jsonContent).getAsJsonArray();
         for (JsonElement element : ja) {
             JsonObject jsonObject = element.getAsJsonObject();
             String label = jsonObject.get("label").getAsString();
-            String url = jsonObject.get("url").getAsString();
-            checkBoxes.put(new JCheckBox(label), url);
+            String creator = jsonObject.get("creator").getAsString();
+
+            checkBoxes.put(new JCheckBox(String.format("%s (by %s)", label, creator)), jsonObject);
         }
         return checkBoxes;
     }
@@ -196,9 +176,9 @@ public class MapCheckFrame extends JFrame {
         for (JCheckBox c : this.checkBoxes.keySet()) {
             c.addActionListener(e -> {
                 if (c.isSelected()) {
-                    this.selectedMaps.add(this.checkBoxes.get(c));
+                    this.selectedMaps.add(this.checkBoxes.get(c).get("url").getAsString());
                 } else {
-                    this.selectedMaps.remove(this.checkBoxes.get(c));
+                    this.selectedMaps.remove(this.checkBoxes.get(c).get("url").getAsString());
                 }
             });
             gbc.gridx = 0;
@@ -215,15 +195,6 @@ public class MapCheckFrame extends JFrame {
     }
 
     private void initializeActionListeners() {
-        this.addMapButton.addActionListener(e -> {
-            String url = this.urlField.getText();
-            String mapName = this.getMapNameFromUrl(url);
-            if (url.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Url missing");
-                return;
-            }
-            this.isValidUrl(url, mapName);
-        });
 
         this.downloadButton.addActionListener(e -> new Thread(this::downloadMaps).start());
 
@@ -232,17 +203,6 @@ public class MapCheckFrame extends JFrame {
         this.selectAllButton.addActionListener(a -> selectAllCheckBoxes(true));
 
         this.deSelectAllButton.addActionListener(a -> selectAllCheckBoxes(false));
-    }
-
-    private void isValidUrl(String url, String mapName) {
-        if (url.endsWith(".zip") || url.endsWith(".rar")) {
-            addMapToJson("maps.json", mapName, url);
-        } else {
-            int choice = JOptionPane.showConfirmDialog(null, String.format("Invalid URL \n %s \nwould you still like to add it? ", url), "Invalid Map URL", JOptionPane.YES_NO_OPTION);
-            if (choice == JOptionPane.YES_OPTION) {
-                addMapToJson("maps.json", mapName, url);
-            }
-        }
     }
 
     private void selectAllCheckBoxes(boolean select) {
@@ -274,18 +234,15 @@ public class MapCheckFrame extends JFrame {
         File mcDir = new File(file, ".minecraft");
         File altMcDir = new File(file, "minecraft");
 
-        String savesPath = "";
-        boolean isValidDir = false;
+        String savesPath = null;
 
         if (mcDir.exists()) {
             savesPath = Paths.get(mcDir.toString()).resolve("saves").toString();
-            isValidDir = true;
         } else if (altMcDir.exists()) {
             savesPath = Paths.get(altMcDir.toString()).resolve("saves").toString();
-            isValidDir = true;
         }
 
-        if (isValidDir) {
+        if (savesPath != null) {
             this.instancePaths.add(savesPath);
             System.out.println("Added: " + savesPath);
         } else {
@@ -301,20 +258,6 @@ public class MapCheckFrame extends JFrame {
                 System.out.println("Added: " + file.getAbsolutePath());
             }
         }
-    }
-
-
-    private String getMapNameFromUrl(String url) {
-        String mapName = "Unknown Map";
-        if (url.endsWith(".zip") || url.endsWith(".rar")) {
-            String[] split = url.split("/");
-            if (split.length > 1) {
-                mapName = split[split.length - 1].replace(".zip", "").replace(".rar", "");
-            }
-        } else {
-            mapName = "Unknown Name";
-        }
-        return mapName;
     }
 
     public void updateProgressBar() {
@@ -355,12 +298,12 @@ public class MapCheckFrame extends JFrame {
 
 
 class MapCheck {
-    public static String VERSION = "4.1.0";
+    public static String VERSION = "4.2.0";
     public static URL MAPS_URL;
 
     static {
         try {
-            MAPS_URL = new URL("https://gist.github.com/cylorun/3cd5d459d9adc9ad28608e8ed606aadb/raw/6a3234849f615eb76c6e511a76406a9c115367dc/maps.json");
+            MAPS_URL = new URL("https://cylorun.com/api/maps");
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
