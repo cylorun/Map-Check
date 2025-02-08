@@ -1,0 +1,17 @@
+
+{
+    "luatools_path": "~/go/bin",
+    "dto_dir": "./ngx_conf/dto",
+    "swagger.docs.path": "./docs",
+    "swagger.excludes": "./client",
+    "swagger.file.type": "json",
+    "swagger.main.lua.path": "./main.lua",
+    "swagger.name": "swagger",
+    "swagger.search_dirs": "./ngx_conf,./config/cn/online",
+    "validator_dir": "./ngx_conf/validator",
+    "yapi.config.file": "docs/swagger-yapi.json",
+    "yapi.config.mode": "mergin",
+    "yapi.config.server": "https://api.yapi.net",
+    "yapi.config.token": "xxxxxxxxx"
+}
+            

@@ -5,12 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="63c0ded9-9da0-40f4-b6cb-504c6c512873" name="Changes" comment="clea">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/maps.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/FileUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/FileUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/Main.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/MapCheckFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/MapCheckFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/cylorun/MapCheckFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/cylorun/MapCheck.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +29,23 @@
         </task>
         <projects_view>
           <tree_state>
-            <expand />
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="Map-Check" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="Map-Check" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="Map-Check" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
             <select />
           </tree_state>
         </projects_view>
@@ -70,6 +85,7 @@
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "Gradle.Map-Check [:Main.main()].executor": "Run",
     "Gradle.Map-Check [:MapCheck.main()].executor": "Run",
+    "Gradle.Map-Check [clean].executor": "Run",
     "Gradle.Map-Check [shadowJar].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -91,6 +107,11 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="me.cylorun" />
+    </key>
+  </component>
   <component name="RunManager" selected="Application.MapCheck">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="me.cylorun.Main" />
@@ -118,6 +139,28 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Map-Check [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="clean" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="Map-Check [shadowJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -142,6 +185,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.Map-Check [clean]" />
         <item itemvalue="Gradle.Map-Check [shadowJar]" />
         <item itemvalue="Application.MapCheck" />
         <item itemvalue="Application.Main" />
@@ -156,7 +200,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1693997516894</updated>
-      <workItem from="1718222869120" duration="4167000" />
+      <workItem from="1718222869120" duration="4877000" />
+      <workItem from="1738977067248" duration="1219000" />
     </task>
     <task id="LOCAL-00001" summary="works">
       <option name="closed" value="true" />

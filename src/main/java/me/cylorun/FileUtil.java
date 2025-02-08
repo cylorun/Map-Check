@@ -17,23 +17,24 @@ import java.util.zip.ZipFile;
 public class FileUtil {
     private static final Path TEMP_FOLDER = Paths.get(System.getProperty("user.dir"), "mc_temp");
 
-    public static List<String> downloadToTemp(List<String> maps) {
+    public static List<String> downloadMapsToTemp(List<String> mapUrls) {
         List<String> downloadedMapsPaths = new ArrayList<>();
         List<String> newSavesPaths = new ArrayList<>();
 
         try {
             Files.createDirectory(TEMP_FOLDER);
         } catch (IOException ignored) {
+            MapCheckFrame.showError("Failed to create temp folder, make sure mapcheck has permission to create files");
         }
 
-        for (String fileURL : maps) {
+        for (String fileURL : mapUrls) {
             int idx = fileURL.lastIndexOf('.');
             String end = idx == -1 ? ".zip" : fileURL.substring(idx);
 
             if(end.length() > 4){
                 end =  ".zip";
             }
-            String fileName = String.valueOf(maps.indexOf(fileURL)) + end;
+            String fileName = String.valueOf(mapUrls.indexOf(fileURL)) + end;
             Path saveFilePath = Paths.get(TEMP_FOLDER.toString(), fileName);
             System.out.println("Downloading map from "+fileURL);
             try (InputStream in = new BufferedInputStream(new URL(fileURL).openStream())) {

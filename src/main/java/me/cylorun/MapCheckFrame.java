@@ -1,6 +1,5 @@
 package me.cylorun;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -14,9 +13,9 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,14 +69,15 @@ public class MapCheckFrame extends JFrame {
 
     private void downloadMapInfo() {
         try {
-            if (Files.exists(Paths.get("maps.json"))) {
-                Files.delete(Paths.get("maps.json"));
+            Path mapsPath = Paths.get("maps.json");
+            if (Files.exists(mapsPath)) {
+                Files.delete(mapsPath);
             }
 
             URL url = MapCheck.MAPS_URL;
-            Files.copy(url.openStream(), Paths.get("maps.json"));
+            Files.copy(url.openStream(), mapsPath);
         } catch (IOException e) {
-            showError(e);
+            MapCheckFrame.showError("Failed to download maps folder, make sure mapcheck has permission to create files");
         }
     }
 
@@ -152,11 +152,9 @@ public class MapCheckFrame extends JFrame {
             jsonContent = new String(Files.readAllBytes(Paths.get("maps.json")));
         } catch (FileNotFoundException e) {
             MapCheckFrame.showError("Maps.json file not found, try re-launching map-check");
-            System.exit(0);
             throw new RuntimeException(e);
         } catch (IOException e) {
             MapCheckFrame.showError("Something weird happened: " + e);
-            System.exit(1);
             throw new RuntimeException(e);
         }
 
@@ -230,32 +228,46 @@ public class MapCheckFrame extends JFrame {
         }
     }
 
-    private void processSelectedDir(File file) {
-        File mcDir = new File(file, ".minecraft");
-        File altMcDir = new File(file, "minecraft");
+    private void processSelectedDir(File selectedDir) {
+        File[] mcdirs = new File[]{
+                new File(selectedDir, "minecraft"),
+                new File(selectedDir, ".minecraft")
+        };
 
-        String savesPath = null;
-
-        if (mcDir.exists()) {
-            savesPath = Paths.get(mcDir.toString()).resolve("saves").toString();
-        } else if (altMcDir.exists()) {
-            savesPath = Paths.get(altMcDir.toString()).resolve("saves").toString();
+        Path savesPath = null;
+        for (File dir : mcdirs) {
+            if (dir.exists()) {
+                savesPath = Paths.get(dir.getAbsolutePath()).resolve("saves");
+            }
         }
 
+        if (savesPath == null) {
+            for (File dir : mcdirs) {
+                if (selectedDir.getName().equals(dir.getName())) {
+                    savesPath = Paths.get(selectedDir.getAbsolutePath()).resolve("saves");
+                }
+            }
+        }
+
+
         if (savesPath != null) {
-            this.instancePaths.add(savesPath);
-            System.out.println("Added: " + savesPath);
+            if (Files.exists(savesPath)) {
+                savesPath.toFile().mkdirs();
+            }
+
+            this.instancePaths.add(savesPath.toString());
+            System.out.println("Added path: " + savesPath);
         } else {
             int choice = JOptionPane.showConfirmDialog(
                     null,
-                    file.getAbsolutePath() + "\n is not a Minecraft directory \n Would you still like to add it?",
+                    selectedDir.getAbsolutePath() + "\n is not a Minecraft directory \n Would you still like to add it?",
                     "Invalid Directory",
                     JOptionPane.YES_NO_OPTION
             );
 
             if (choice == JOptionPane.YES_OPTION) {
-                instancePaths.add(file.getAbsolutePath());
-                System.out.println("Added: " + file.getAbsolutePath());
+                instancePaths.add(selectedDir.getAbsolutePath());
+                System.out.println("Added: " + selectedDir.getAbsolutePath());
             }
         }
     }
@@ -274,7 +286,7 @@ public class MapCheckFrame extends JFrame {
     private void downloadMaps() {
         resetProgressBar();
         if (!this.instancePaths.isEmpty() && !this.selectedMaps.isEmpty()) {
-            List<String> downloadedMapsPaths = FileUtil.downloadToTemp(this.selectedMaps);
+            List<String> downloadedMapsPaths = FileUtil.downloadMapsToTemp(this.selectedMaps);
             FileUtil.copyFromTemp(this.instancePaths, downloadedMapsPaths);
             try {
                 FileUtils.deleteDirectory(new File(Paths.get(System.getProperty("user.dir"), "mc_temp").toString()));
@@ -293,24 +305,5 @@ public class MapCheckFrame extends JFrame {
     public static void showError(Object o) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showMessageDialog(null, "An error occurred\n" + o.toString());
-    }
-}
-
-
-class MapCheck {
-    public static String VERSION = "4.2.0";
-    public static URL MAPS_URL;
-
-    static {
-        try {
-            MAPS_URL = new URL("https://cylorun.com/api/maps");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void main(String[] args) throws UnsupportedLookAndFeelException {
-        UIManager.setLookAndFeel(new FlatDarculaLaf());
-        MapCheckFrame.getInstance();
     }
 }
