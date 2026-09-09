@@ -3,18 +3,13 @@ package me.cylorun;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -24,21 +19,20 @@ import java.util.Map;
 
 public class MapCheckFrame extends JFrame {
     private final JPanel mainPanel;
+    private final JsonArray maps = MapCatalog.load();
     private JButton downloadButton;
-    private JTextField urlField;
     private JButton instSelectButton;
     private JButton selectAllButton;
     private JButton deSelectAllButton;
     private JProgressBar progressBar;
-    public List<String> selectedMaps = new ArrayList<>();
-    public List<String> instancePaths = new ArrayList<>();
+    private final List<JsonObject> selectedMaps = new ArrayList<>();
+    private final List<String> instancePaths = new ArrayList<>();
     private Map<JCheckBox, JsonObject> checkBoxes;
     private int currentStep = 0;
     private static MapCheckFrame instance;
 
     private MapCheckFrame() {
         this.mainPanel = new JPanel();
-        this.downloadMapInfo();
         this.initializeMainPanel();
         this.initializeActionListeners();
         this.setupFrame();
@@ -61,39 +55,11 @@ public class MapCheckFrame extends JFrame {
         this.pack();
     }
 
-    private void reload() {
-        this.mainPanel.removeAll();
-        this.initializeMainPanel();
-        this.pack();
-    }
-
-    private void downloadMapInfo() {
-        try {
-            Path mapsPath = Paths.get("maps.json");
-            if (Files.exists(mapsPath)) {
-                Files.delete(mapsPath);
-            }
-
-            URL url = MapCheck.MAPS_URL;
-            Files.copy(url.openStream(), mapsPath);
-        } catch (IOException e) {
-            MapCheckFrame.showError("Failed to download maps folder, make sure mapcheck has permission to create files");
-        }
-    }
-
-
     private void initializeMainPanel() {
-        int totalMaps = 0;
-        try {
-            totalMaps = this.getMapCount();
-        } catch (IOException e) {
-            showError(e);
-            return;
-        }
+        int totalMaps = this.maps.size();
         int height = 220 + (totalMaps * 30);
 
         this.downloadButton = new JButton("Download");
-        this.urlField = new JTextField();
         this.instSelectButton = new JButton("Select Instances");
         this.progressBar = new JProgressBar(0, 100);
         this.selectAllButton = new JButton("Select All");
@@ -147,19 +113,7 @@ public class MapCheckFrame extends JFrame {
 
     private Map<JCheckBox, JsonObject> getCheckBoxes() {
         Map<JCheckBox, JsonObject> checkBoxes = new HashMap<>();
-        String jsonContent;
-        try {
-            jsonContent = new String(Files.readAllBytes(Paths.get("maps.json")));
-        } catch (FileNotFoundException e) {
-            MapCheckFrame.showError("Maps.json file not found, try re-launching map-check");
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            MapCheckFrame.showError("Something weird happened: " + e);
-            throw new RuntimeException(e);
-        }
-
-        JsonArray ja = JsonParser.parseString(jsonContent).getAsJsonArray();
-        for (JsonElement element : ja) {
+        for (JsonElement element : this.maps) {
             JsonObject jsonObject = element.getAsJsonObject();
             String label = jsonObject.get("label").getAsString();
             String creator = jsonObject.get("creator").getAsString();
@@ -174,9 +128,11 @@ public class MapCheckFrame extends JFrame {
         for (JCheckBox c : this.checkBoxes.keySet()) {
             c.addActionListener(e -> {
                 if (c.isSelected()) {
-                    this.selectedMaps.add(this.checkBoxes.get(c).get("url").getAsString());
+                    if (!this.selectedMaps.contains(this.checkBoxes.get(c))) {
+                        this.selectedMaps.add(this.checkBoxes.get(c));
+                    }
                 } else {
-                    this.selectedMaps.remove(this.checkBoxes.get(c).get("url").getAsString());
+                    this.selectedMaps.remove(this.checkBoxes.get(c));
                 }
             });
             gbc.gridx = 0;
@@ -186,15 +142,18 @@ public class MapCheckFrame extends JFrame {
         }
     }
 
-    private int getMapCount() throws IOException {
-        String jsonContent = new String(Files.readAllBytes(Paths.get("maps.json")));
-        JsonArray ja = JsonParser.parseString(jsonContent).getAsJsonArray();
-        return ja.size();
-    }
-
     private void initializeActionListeners() {
 
-        this.downloadButton.addActionListener(e -> new Thread(this::downloadMaps).start());
+        this.downloadButton.addActionListener(e -> {
+            this.downloadButton.setEnabled(false);
+            new Thread(() -> {
+                try {
+                    this.downloadMaps();
+                } finally {
+                    SwingUtilities.invokeLater(() -> this.downloadButton.setEnabled(true));
+                }
+            }).start();
+        });
 
         this.instSelectButton.addActionListener(e -> openFileChooser());
 
@@ -251,10 +210,6 @@ public class MapCheckFrame extends JFrame {
 
 
         if (savesPath != null) {
-            if (Files.exists(savesPath)) {
-                savesPath.toFile().mkdirs();
-            }
-
             this.instancePaths.add(savesPath.toString());
             System.out.println("Added path: " + savesPath);
         } else {
@@ -286,16 +241,21 @@ public class MapCheckFrame extends JFrame {
     private void downloadMaps() {
         resetProgressBar();
         if (!this.instancePaths.isEmpty() && !this.selectedMaps.isEmpty()) {
-            List<String> downloadedMapsPaths = FileUtil.downloadMapsToTemp(this.selectedMaps);
-            FileUtil.copyFromTemp(this.instancePaths, downloadedMapsPaths);
+            List<String> installedMaps = new ArrayList<>();
             try {
-                FileUtils.deleteDirectory(new File(Paths.get(System.getProperty("user.dir"), "mc_temp").toString()));
+                List<String> downloadedMapsPaths = FileUtil.downloadMapsToTemp(new ArrayList<>(this.selectedMaps));
+                for (String path : downloadedMapsPaths) {
+                    installedMaps.add(new File(path).getName());
+                }
+                FileUtil.copyFromTemp(this.instancePaths, downloadedMapsPaths);
             } catch (IOException e) {
                 showError(e);
                 return;
+            } finally {
+                FileUtil.clearTemp();
             }
             Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(null, "Finished downloading", "Download Status", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Installed:\n" + String.join("\n", installedMaps), "Download Status", JOptionPane.INFORMATION_MESSAGE);
         } else {
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(null, "No maps or instances selected", "Download Status", JOptionPane.WARNING_MESSAGE);
@@ -304,6 +264,12 @@ public class MapCheckFrame extends JFrame {
 
     public static void showError(Object o) {
         Toolkit.getDefaultToolkit().beep();
-        JOptionPane.showMessageDialog(null, "An error occurred\n" + o.toString());
+        StringBuilder msg = new StringBuilder("An error occurred\n" + o);
+        if (o instanceof Throwable) {
+            for (Throwable c = ((Throwable) o).getCause(); c != null; c = c.getCause()) {
+                msg.append("\ncaused by: ").append(c);
+            }
+        }
+        JOptionPane.showMessageDialog(null, msg.toString());
     }
 }
