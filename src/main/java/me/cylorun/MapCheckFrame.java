@@ -154,7 +154,16 @@ public class MapCheckFrame extends JFrame {
 
     private void initializeActionListeners() {
 
-        this.downloadButton.addActionListener(e -> new Thread(this::downloadMaps).start());
+        this.downloadButton.addActionListener(e -> {
+            this.downloadButton.setEnabled(false);
+            new Thread(() -> {
+                try {
+                    this.downloadMaps();
+                } finally {
+                    SwingUtilities.invokeLater(() -> this.downloadButton.setEnabled(true));
+                }
+            }).start();
+        });
 
         this.instSelectButton.addActionListener(e -> openFileChooser());
 
@@ -269,6 +278,12 @@ public class MapCheckFrame extends JFrame {
 
     public static void showError(Object o) {
         Toolkit.getDefaultToolkit().beep();
-        JOptionPane.showMessageDialog(null, "An error occurred\n" + o.toString());
+        StringBuilder msg = new StringBuilder("An error occurred\n" + o);
+        if (o instanceof Throwable) {
+            for (Throwable c = ((Throwable) o).getCause(); c != null; c = c.getCause()) {
+                msg.append("\ncaused by: ").append(c);
+            }
+        }
+        JOptionPane.showMessageDialog(null, msg.toString());
     }
 }

@@ -6,7 +6,7 @@ import javax.swing.*;
 
 
 public class MapCheck {
-    public static final String VERSION = "4.4.1";
+    public static final String VERSION = "4.4.0";
 
     public static void main(String[] args) throws UnsupportedLookAndFeelException {
         UIManager.setLookAndFeel(new FlatDarculaLaf());

@@ -62,7 +62,10 @@ public class FileUtil {
     public static String unzipFolder(String zipFilePath) throws IOException {
         String extractPath = removeFileExt(zipFilePath);
         String savesFile = null;
-        if (new File(zipFilePath).exists() && !new File(zipFilePath).isDirectory()) {
+        File zip = new File(zipFilePath);
+        boolean downloaded = zip.isFile();
+        long bytes = zip.length();
+        if (downloaded) {
             try (ZipFile zipFile = new ZipFile(zipFilePath)) {
                 Enumeration<? extends ZipEntry> entries = zipFile.entries();
                 boolean match = false;
@@ -96,7 +99,8 @@ public class FileUtil {
             Files.delete(Paths.get(zipFilePath));
         }
         if (savesFile == null) {
-            throw new IOException("No map folder found in " + zipFilePath);
+            throw new IOException("No map folder found in " + zipFilePath
+                    + " (downloaded=" + downloaded + ", bytes=" + bytes + ")");
         }
         return savesFile;
     }
