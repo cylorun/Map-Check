@@ -3,7 +3,6 @@ package me.cylorun;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -23,13 +21,12 @@ public class MapCheckFrame extends JFrame {
     private final JPanel mainPanel;
     private final JsonArray maps = MapCatalog.load();
     private JButton downloadButton;
-    private JTextField urlField;
     private JButton instSelectButton;
     private JButton selectAllButton;
     private JButton deSelectAllButton;
     private JProgressBar progressBar;
-    public List<JsonObject> selectedMaps = new ArrayList<>();
-    public List<String> instancePaths = new ArrayList<>();
+    private final List<JsonObject> selectedMaps = new ArrayList<>();
+    private final List<String> instancePaths = new ArrayList<>();
     private Map<JCheckBox, JsonObject> checkBoxes;
     private int currentStep = 0;
     private static MapCheckFrame instance;
@@ -58,18 +55,11 @@ public class MapCheckFrame extends JFrame {
         this.pack();
     }
 
-    private void reload() {
-        this.mainPanel.removeAll();
-        this.initializeMainPanel();
-        this.pack();
-    }
-
     private void initializeMainPanel() {
         int totalMaps = this.maps.size();
         int height = 220 + (totalMaps * 30);
 
         this.downloadButton = new JButton("Download");
-        this.urlField = new JTextField();
         this.instSelectButton = new JButton("Select Instances");
         this.progressBar = new JProgressBar(0, 100);
         this.selectAllButton = new JButton("Select All");
@@ -220,10 +210,6 @@ public class MapCheckFrame extends JFrame {
 
 
         if (savesPath != null) {
-            if (Files.exists(savesPath)) {
-                savesPath.toFile().mkdirs();
-            }
-
             this.instancePaths.add(savesPath.toString());
             System.out.println("Added path: " + savesPath);
         } else {
@@ -266,7 +252,7 @@ public class MapCheckFrame extends JFrame {
                 showError(e);
                 return;
             } finally {
-                FileUtils.deleteQuietly(new File(Paths.get(System.getProperty("user.dir"), "mc_temp").toString()));
+                FileUtil.clearTemp();
             }
             Toolkit.getDefaultToolkit().beep();
             JOptionPane.showMessageDialog(null, "Installed:\n" + String.join("\n", installedMaps), "Download Status", JOptionPane.INFORMATION_MESSAGE);
