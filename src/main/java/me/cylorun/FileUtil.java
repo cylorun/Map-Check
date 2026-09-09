@@ -1,5 +1,6 @@
 package me.cylorun;
 
+import com.google.gson.JsonObject;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
@@ -16,12 +17,16 @@ import java.util.zip.ZipFile;
 public class FileUtil {
     private static final Path TEMP_FOLDER = Paths.get(System.getProperty("user.dir"), "mc_temp");
 
-    public static List<String> downloadMapsToTemp(List<String> mapUrls) throws IOException {
+    public static List<String> downloadMapsToTemp(List<JsonObject> maps) throws IOException {
+        return downloadMapsToTemp(maps, () -> MapCheckFrame.getInstance().updateProgressBar());
+    }
+
+    static List<String> downloadMapsToTemp(List<JsonObject> maps, Runnable progress) throws IOException {
         List<String> downloadedMapsPaths = new ArrayList<>();
         List<String> newSavesPaths = new ArrayList<>();
         List<String> latestUrls = new ArrayList<>();
-        for (String mapUrl : mapUrls) {
-            latestUrls.add(MapRelease.latestUrl(mapUrl));
+        for (JsonObject map : maps) {
+            latestUrls.add(MapRelease.latestUrl(map));
         }
 
         Files.createDirectories(TEMP_FOLDER);
@@ -42,16 +47,12 @@ public class FileUtil {
                 throw new IOException("Failed to download:\n" + fileURL, e);
             }
             downloadedMapsPaths.add(saveFilePath.toString());
-            MapCheckFrame.getInstance().updateProgressBar();
+            progress.run();
         }
 
         for (String path : downloadedMapsPaths) {
-            try {
-                newSavesPaths.add(unzipFolder(path));
-            } catch (IOException e) {
-                MapCheckFrame.showError(e);
-            }
-            MapCheckFrame.getInstance().updateProgressBar();
+            newSavesPaths.add(unzipFolder(path));
+            progress.run();
         }
 
         return newSavesPaths;
@@ -91,10 +92,11 @@ public class FileUtil {
                         }
                     }
                 }
-            } catch (Exception e) {
-                MapCheckFrame.showError(e);
             }
             Files.delete(Paths.get(zipFilePath));
+        }
+        if (savesFile == null) {
+            throw new IOException("No map folder found in " + zipFilePath);
         }
         return savesFile;
     }
@@ -103,7 +105,7 @@ public class FileUtil {
         return s.substring(0, s.lastIndexOf('.'));
     }
 
-    public static void copyFromTemp(List<String> instances, List<String> tempPaths) {
+    public static void copyFromTemp(List<String> instances, List<String> tempPaths) throws IOException {
         System.out.println("Instance Paths: " + instances);
         System.out.println("World Paths: " + tempPaths);
         for (String instance : instances) {
@@ -119,12 +121,7 @@ public class FileUtil {
     }
 
 
-    public static void copyFolder(String source, String destination)  {
-        try {
-            FileUtils.copyDirectoryToDirectory(new File(source), new File(destination));
-        } catch (IOException e) {
-            MapCheckFrame.showError(e);
-        }
-
+    public static void copyFolder(String source, String destination) throws IOException {
+        FileUtils.copyDirectoryToDirectory(new File(source), new File(destination));
     }
 }
