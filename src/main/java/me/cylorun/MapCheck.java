@@ -8,7 +8,7 @@ import java.net.URL;
 
 
 public class MapCheck {
-    public static final String VERSION = "4.2.0";
+    public static final String VERSION = "4.4.0";
     public static URL MAPS_URL;
 
     static {

@@ -286,9 +286,9 @@ public class MapCheckFrame extends JFrame {
     private void downloadMaps() {
         resetProgressBar();
         if (!this.instancePaths.isEmpty() && !this.selectedMaps.isEmpty()) {
-            List<String> downloadedMapsPaths = FileUtil.downloadMapsToTemp(this.selectedMaps);
-            FileUtil.copyFromTemp(this.instancePaths, downloadedMapsPaths);
             try {
+                List<String> downloadedMapsPaths = FileUtil.downloadMapsToTemp(new ArrayList<>(this.selectedMaps));
+                FileUtil.copyFromTemp(this.instancePaths, downloadedMapsPaths);
                 FileUtils.deleteDirectory(new File(Paths.get(System.getProperty("user.dir"), "mc_temp").toString()));
             } catch (IOException e) {
                 showError(e);

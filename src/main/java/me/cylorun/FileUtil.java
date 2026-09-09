@@ -2,7 +2,6 @@ package me.cylorun;
 
 import org.apache.commons.io.FileUtils;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
@@ -17,30 +16,30 @@ import java.util.zip.ZipFile;
 public class FileUtil {
     private static final Path TEMP_FOLDER = Paths.get(System.getProperty("user.dir"), "mc_temp");
 
-    public static List<String> downloadMapsToTemp(List<String> mapUrls) {
+    public static List<String> downloadMapsToTemp(List<String> mapUrls) throws IOException {
         List<String> downloadedMapsPaths = new ArrayList<>();
         List<String> newSavesPaths = new ArrayList<>();
-
-        try {
-            Files.createDirectory(TEMP_FOLDER);
-        } catch (IOException ignored) {
-            MapCheckFrame.showError("Failed to create temp folder, make sure mapcheck has permission to create files");
+        List<String> latestUrls = new ArrayList<>();
+        for (String mapUrl : mapUrls) {
+            latestUrls.add(MapRelease.latestUrl(mapUrl));
         }
 
-        for (String fileURL : mapUrls) {
+        Files.createDirectories(TEMP_FOLDER);
+
+        for (String fileURL : latestUrls) {
             int idx = fileURL.lastIndexOf('.');
             String end = idx == -1 ? ".zip" : fileURL.substring(idx);
 
             if(end.length() > 4){
                 end =  ".zip";
             }
-            String fileName = String.valueOf(mapUrls.indexOf(fileURL)) + end;
+            String fileName = String.valueOf(latestUrls.indexOf(fileURL)) + end;
             Path saveFilePath = Paths.get(TEMP_FOLDER.toString(), fileName);
             System.out.println("Downloading map from "+fileURL);
             try (InputStream in = new BufferedInputStream(new URL(fileURL).openStream())) {
                 Files.copy(in, saveFilePath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Failed to download:\n" + fileURL, "Error", JOptionPane.ERROR_MESSAGE);
+                throw new IOException("Failed to download:\n" + fileURL, e);
             }
             downloadedMapsPaths.add(saveFilePath.toString());
             MapCheckFrame.getInstance().updateProgressBar();
